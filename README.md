@@ -16,3 +16,6 @@ ___
 
 ### Minimalna wersja Androida
 4.0
+
+### Zaimplementowana funkcjonalność
+* Aplikacja działa w tle
