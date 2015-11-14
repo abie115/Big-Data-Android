@@ -2,6 +2,7 @@ package com.android.bigdata.stepshunter;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
+
+    private EditText frequency;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        frequency = (EditText) findViewById(R.id.frequency_value);
+        frequency.setText(Long.toString(HunterService.getCurrentFrequenct()));
     }
 
     @Override
@@ -54,20 +60,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeFrequency(View view){
-        EditText frequency = (EditText) findViewById(R.id.frequency_value);
+        String message;
 
-        HunterService.setCurrentFrequency(Long.parseLong(frequency.getText().toString()));
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("zmiana "+HunterService.getCurrentFrequenct());
-        builder.show();
+        if(frequency.getText().toString().matches(""))
+            message = "Musisz podać wartość.";
+        else {
+            long newFrequency = Long.parseLong(frequency.getText().toString());
+
+            if (newFrequency < HunterService.getMinFrequency())
+                message = "Podana wartość jest zbyt niska.";
+            else if (newFrequency > HunterService.getMaxFrequency())
+                message = "Podana wartość jest zbyt wysoka.";
+            else {
+                HunterService.setCurrentFrequency(newFrequency);
+                message = "Zmieniono na " + HunterService.getCurrentFrequenct() + " sek.";
+            }
+        }
+
+        showDialog(message);
     }
 
     public void setDefaultFrequency(View view){
         HunterService.setDefaultFrequency();
 
+        frequency.setText(Long.toString(HunterService.getCurrentFrequenct()));
+
+        showDialog("Przywrócono " + HunterService.getCurrentFrequenct() + " sek.");
+    }
+
+    private void showDialog(String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("domyślna "+HunterService.getCurrentFrequenct());
-        //return builder.create();
+        builder.setMessage(message)
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener(){
+                    public void onClick(DialogInterface dialog, int id){
+                        dialog.cancel();
+                    }
+                });
         builder.show();
     }
 }

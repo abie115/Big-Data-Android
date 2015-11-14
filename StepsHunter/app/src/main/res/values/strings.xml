@@ -4,4 +4,5 @@
     <string name="frequency_setting">Częstotliwość pomiaru: </string>
     <string name="frequency_batton_set">Ustaw</string>
     <string name="frequency_batton_default">Przywróć domyślną wartość</string>
+    <string name="OK">OK</string>
 </resources>
