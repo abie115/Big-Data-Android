@@ -11,17 +11,30 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <TextView android:text="@string/frequency_setting" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <EditText android:id="@+id/frequency_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <TextView android:text="@string/frequency_setting" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <Button android:id="@+id/frequency_button" android:text="@string/frequency_batton"
+            <EditText android:id="@+id/frequency_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:inputType="number" />
+
+            <Button android:id="@+id/frequency_button_set" android:text="@string/frequency_batton_set"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <Button android:id="@+id/frequency_button_default" android:text="@string/frequency_batton_default"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
