@@ -1,5 +1,7 @@
 package com.android.bigdata.stepshunter;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -8,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,5 +51,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void changeFrequency(View view){
+        EditText frequency = (EditText) findViewById(R.id.frequency_value);
+
+        HunterService.setCurrentFrequency(Long.parseLong(frequency.getText().toString()));
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("zmiana "+HunterService.getCurrentFrequenct());
+        builder.show();
+    }
+
+    public void setDefaultFrequency(View view){
+        HunterService.setDefaultFrequency();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("domyślna "+HunterService.getCurrentFrequenct());
+        //return builder.create();
+        builder.show();
     }
 }

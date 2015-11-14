@@ -30,13 +30,15 @@
 
             <Button android:id="@+id/frequency_button_set" android:text="@string/frequency_batton_set"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:onClick="changeFrequency" />
 
         </LinearLayout>
 
         <Button android:id="@+id/frequency_button_default" android:text="@string/frequency_batton_default"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:onClick="setDefaultFrequency" />
 
     </LinearLayout>
 </RelativeLayout>
