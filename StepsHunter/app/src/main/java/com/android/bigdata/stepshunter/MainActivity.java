@@ -1,6 +1,11 @@
 package com.android.bigdata.stepshunter;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
+
+    private HunterService hService;
+    private boolean hBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,4 +57,43 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    //******************************************************
+    // Serwis
+
+    //jesli ma startowac przy rozpoczeciu aktywnosci to wywolac w onStart()
+    private void startHunterService(){
+        // Bindowanie serwisu
+        Intent intent = new Intent(this, HunterService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    //jeśli ma konczyc przy konczeniu akrywnosci to wywolac w onStop()
+    private void stopHunterService(){
+        // Odbindowanie serwisu
+        // Unbind from the service
+        if (hBound) {
+            unbindService(mConnection);
+            hBound = false;
+        }
+    }
+
+    //**********************************************
+
+    // definiuje wywolania serwisu, parametry podane przez bindService()
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            HunterService.LocalBinder binder = (HunterService.LocalBinder) service;
+            hService = binder.getService();
+            hBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            hBound = false;
+        }
+    };
+
 }
