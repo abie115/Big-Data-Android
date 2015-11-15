@@ -1,9 +1,15 @@
 package com.android.bigdata.stepshunter;
 
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +22,9 @@ import android.widget.EditText;
 public class MainActivity extends AppCompatActivity {
 
     private EditText frequency;
+
+    private HunterService hService;
+    private boolean hBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         frequency = (EditText) findViewById(R.id.frequency_value);
-        frequency.setText(Long.toString(HunterService.getCurrentFrequenct()));
+        frequency.setText(Long.toString(HunterServiceSingleton.getCurrentFrequenct()));
     }
 
     @Override
@@ -67,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
         else {
             long newFrequency = Long.parseLong(frequency.getText().toString());
 
-            if (newFrequency < HunterService.getMinFrequency())
+            if (newFrequency < HunterServiceSingleton.getMinFrequency())
                 message = "Podana wartość jest zbyt niska.";
-            else if (newFrequency > HunterService.getMaxFrequency())
+            else if (newFrequency > HunterServiceSingleton.getMaxFrequency())
                 message = "Podana wartość jest zbyt wysoka.";
             else {
-                HunterService.setCurrentFrequency(newFrequency);
-                message = "Zmieniono na " + HunterService.getCurrentFrequenct() + " sek.";
+                HunterServiceSingleton.setCurrentFrequency(newFrequency);
+                message = "Zmieniono na " + HunterServiceSingleton.getCurrentFrequenct() + " sek.";
             }
         }
 
@@ -81,11 +90,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setDefaultFrequency(View view){
-        HunterService.setDefaultFrequency();
+        HunterServiceSingleton.setDefaultFrequency();
 
-        frequency.setText(Long.toString(HunterService.getCurrentFrequenct()));
+        frequency.setText(Long.toString(HunterServiceSingleton.getCurrentFrequenct()));
 
-        showDialog("Przywrócono " + HunterService.getCurrentFrequenct() + " sek.");
+        showDialog("Przywrócono " + HunterServiceSingleton.getCurrentFrequenct() + " sek.");
     }
 
     private void showDialog(String message){
@@ -98,4 +107,43 @@ public class MainActivity extends AppCompatActivity {
                 });
         builder.show();
     }
+
+    //******************************************************
+    // Serwis
+
+    //jesli ma startowac przy rozpoczeciu aktywnosci to wywolac w onStart()
+    private void startHunterService(){
+        // Bindowanie serwisu
+        Intent intent = new Intent(this, HunterService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    //jeśli ma konczyc przy konczeniu akrywnosci to wywolac w onStop()
+    private void stopHunterService(){
+        // Odbindowanie serwisu
+        // Unbind from the service
+        if (hBound) {
+            unbindService(mConnection);
+            hBound = false;
+        }
+    }
+
+    //**********************************************
+
+    // definiuje wywolania serwisu, parametry podane przez bindService()
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            HunterService.LocalBinder binder = (HunterService.LocalBinder) service;
+            hService = binder.getService();
+            hBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            hBound = false;
+        }
+    };
+
 }
