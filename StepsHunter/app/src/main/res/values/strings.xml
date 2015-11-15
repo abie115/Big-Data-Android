@@ -8,4 +8,6 @@
     <string name="GPSalert">GPS jest wyłączony. Chcesz przejść do ustawień GPS?</string>
     <string name="Settings">Ustawienia</string>
     <string name="Cancel">Anuluj</string>
+    <string name="swGPS">GPS</string>
+    <string name="swLocation">Lokalizacja</string>
 </resources>

@@ -14,6 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +24,9 @@ public class MainActivity extends AppCompatActivity {
     TextView tvLatitude;
     TextView tvLongitude;
     TextView tvLog;
+    Switch swGPS;
 
+    private boolean goToSettings =false;
     private LocationManager locationManager;
 
     @Override
@@ -32,14 +36,22 @@ public class MainActivity extends AppCompatActivity {
         tvLatitude = (TextView) findViewById(R.id.tvLatitude);
         tvLongitude = (TextView) findViewById(R.id.tvLongitude);
         tvLog = (TextView) findViewById(R.id.tvLog);
+        swGPS = (Switch) findViewById(R.id.swGPS);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
-        } else {
-            HunterService.getInstance().init(this);
-            HunterService.getInstance().showAlertSettings();
-        }
+
+        swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    providerEnabled();
+
+                } else {
+                    stopSearchLocation();
+                }
+             }
+         });
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,6 +69,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if(goToSettings){
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                startSearchLocation();
+                goToSettings=false;
+            } else {
+                swGPS.setChecked(false);
+            }
+        }
+    }
+
+    public void providerEnabled(){
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            goToSettings=false;
+            Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
+            startSearchLocation();
+        } else {
+            goToSettings=true;
+            HunterService.getInstance().init(MainActivity.this);
+            HunterService.getInstance().showAlertSettings();
+        }
+    }
+
+    public void startSearchLocation(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -70,6 +105,23 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+
+    }
+
+    public void stopSearchLocation(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for Activity#requestPermissions for more details.
+                return;
+            }
+        }
+        locationManager.removeUpdates(locationListener);
     }
 
     @Override
