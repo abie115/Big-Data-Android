@@ -68,6 +68,18 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+        startHunterService();
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        stopHunterService();
+    }
+
     public void changeFrequency(View view){
         String message;
 
@@ -76,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         else {
             long newFrequency = Long.parseLong(frequency.getText().toString());
 
+            /*
             if (newFrequency < HunterServiceSingleton.getMinFrequency())
                 message = "Podana wartość jest zbyt niska.";
             else if (newFrequency > HunterServiceSingleton.getMaxFrequency())
@@ -84,17 +97,35 @@ public class MainActivity extends AppCompatActivity {
                 HunterServiceSingleton.setCurrentFrequency(newFrequency);
                 message = "Zmieniono na " + HunterServiceSingleton.getCurrentFrequenct() + " sek.";
             }
+            */
+
+            if (newFrequency < hService.getMinFrequency())
+                message = "Podana wartość jest zbyt niska.";
+            else if (newFrequency > hService.getMaxFrequency())
+                message = "Podana wartość jest zbyt wysoka.";
+            else {
+                hService.setCurrentFrequency(newFrequency);
+                message = "Zmieniono na " + hService.getCurrentFrequenct() + " sek.";
+            }
         }
 
         showDialog(message);
     }
 
     public void setDefaultFrequency(View view){
+        /*
         HunterServiceSingleton.setDefaultFrequency();
 
         frequency.setText(Long.toString(HunterServiceSingleton.getCurrentFrequenct()));
 
         showDialog("Przywrócono " + HunterServiceSingleton.getCurrentFrequenct() + " sek.");
+        */
+
+        hService.setDefaultFrequency();
+
+        frequency.setText(Long.toString(hService.getCurrentFrequenct()));
+
+        showDialog("Przywrócono " + hService.getCurrentFrequenct() + " sek.");
     }
 
     private void showDialog(String message){
