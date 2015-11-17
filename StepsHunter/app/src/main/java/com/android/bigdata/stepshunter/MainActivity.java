@@ -6,7 +6,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -28,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean goToSettings =false;
     private LocationManager locationManager;
+    private HunterService hService;
+    private boolean hBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +93,8 @@ public class MainActivity extends AppCompatActivity {
             startSearchLocation();
         } else {
             goToSettings=true;
-            HunterService.getInstance().init(MainActivity.this);
-            HunterService.getInstance().showAlertSettings();
+            HunterServiceSingleton.getInstance().init(MainActivity.this);
+            HunterServiceSingleton.getInstance().showAlertSettings();
         }
     }
 
@@ -177,4 +184,41 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+    //******************************************************
+    // Serwis
+
+    //jesli ma startowac przy rozpoczeciu aktywnosci to wywolac w onStart()
+    private void startHunterService(){
+        // Bindowanie serwisu
+        Intent intent = new Intent(this, HunterService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    //jeśli ma konczyc przy konczeniu akrywnosci to wywolac w onStop()
+    private void stopHunterService(){
+        // Odbindowanie serwisu
+        if (hBound) {
+            unbindService(mConnection);
+            hBound = false;
+        }
+    }
+
+    //**********************************************
+
+    // definiuje wywolania serwisu, parametry podane przez bindService()
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            HunterService.LocalBinder binder = (HunterService.LocalBinder) service;
+            hService = binder.getService();
+            hBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            hBound = false;
+        }
+    };
+
 }

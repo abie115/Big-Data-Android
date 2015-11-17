@@ -1,45 +1,31 @@
 package com.android.bigdata.stepshunter;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+import android.app.Service;
 import android.content.Intent;
-import android.provider.Settings;
+import android.os.Binder;
+import android.os.IBinder;
 
-/**
- * Created by Natalia on 2015-11-12.
- */
-public class HunterService {
+public class HunterService extends Service {
+    private IBinder mBinder = new LocalBinder();
 
-    private Context context;
-    private static HunterService ourInstance = new HunterService();
-
-    public static HunterService getInstance() {
-        return ourInstance;
-    }
-    public void init(Context context) {
-        this.context = context;
-    }
-    private HunterService() {
-
+    public HunterService() {
     }
 
-    public void showAlertSettings() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-        alertDialog.setTitle(context.getResources().getString(R.string.GPSdisbaled));
-        alertDialog.setMessage(context.getResources().getString(R.string.GPSalert));
-        alertDialog.setPositiveButton(context.getResources().getString(R.string.Settings), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                context.startActivity(intent);
-            }
-        });
-        alertDialog.setNegativeButton(context.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        alertDialog.show();
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO: Return the communication channel to the service.
+        //throw new UnsupportedOperationException("Not yet implemented");
+        return mBinder;
     }
+
+    //***********************************
+
+    //klasa umozliwiajaca bindowanie klientom
+    public class LocalBinder extends Binder {
+        HunterService getService (){
+            return HunterService.this;
+        }
+
+    }
+
 }
