@@ -1,6 +1,8 @@
 package com.android.bigdata.stepshunter;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,6 +14,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -24,15 +27,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IServiceCallbacks {
 
     TextView tvLatitude;
     TextView tvLongitude;
     TextView tvLog;
     Switch swGPS;
 
-    private boolean goToSettings =false;
-    private LocationManager locationManager;
+    boolean inSettings=false;
     private HunterService hService;
     private boolean hBound = false;
 
@@ -45,17 +47,27 @@ public class MainActivity extends AppCompatActivity {
         tvLog = (TextView) findViewById(R.id.tvLog);
         swGPS = (Switch) findViewById(R.id.swGPS);
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        hService=new HunterService(MainActivity.this);
 
-        swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        hService.startLocationManager();
+
+       swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    providerEnabled();
-
+                    hService.providerEnabled();
+                    //jesli wlaczona lokalizacja to nie przechodzimy do settingow(false), starujemy gps
+                  if(hService.canGetProvider){
+                        inSettings=false;
+                        Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
+                        hService.startSearchLocation();
+                    }else{
+                       inSettings=true;
+                       showAlertSettings();
+                    }
                 } else {
-                    stopSearchLocation();
+                    hService.stopSearchLocation();
                 }
              }
          });
@@ -76,60 +88,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(goToSettings){
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                startSearchLocation();
-                goToSettings=false;
+       //startHunterService();
+      //  startService(new Intent(this, HunterService.class));
+       //jesli przeslismy do settingow, to starujemy w onstart
+        if(inSettings){
+            hService.providerEnabled();
+            if(hService.canGetProvider){
+                Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
+                hService.startSearchLocation();
+                inSettings=false;
             } else {
-                swGPS.setChecked(false);
+                //swGPS.setChecked(false);
+                Toast.makeText(getApplicationContext(), getString(R.string.GPSdisabled), Toast.LENGTH_LONG).show();
             }
         }
     }
 
-    public void providerEnabled(){
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            goToSettings=false;
-            Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
-            startSearchLocation();
-        } else {
-            goToSettings=true;
-            HunterServiceSingleton.getInstance().init(MainActivity.this);
-            HunterServiceSingleton.getInstance().showAlertSettings();
-        }
-    }
-
-    public void startSearchLocation(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
-                return;
-            }
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopHunterService();
 
     }
 
-    public void stopSearchLocation(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
-                return;
-            }
-        }
-        locationManager.removeUpdates(locationListener);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -153,37 +134,34 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
     public void showCoordinates(Location location){
         if (location != null) {
-            tvLatitude.setText(getString(R.string.tvLatitude)+": "+location.getLatitude());
-            tvLongitude.setText(getString(R.string.tvLongitude)+": "+location.getLongitude());
-            tvLog.setText(tvLog.getText()+" " + location.getLatitude()+" " + location.getLongitude()+"\n");
-        }
+            tvLatitude.setText(getString(R.string.tvLatitude)+": "+location.getLongitude());
+            tvLongitude.setText(getString(R.string.tvLongitude)+": "+location.getLatitude());
+            tvLog.setText(tvLog.getText()+" " + location.getLongitude()+" " + location.getLatitude()+"\n");
+       }
     }
 
-    private LocationListener locationListener = new LocationListener() {
+    public void showAlertSettings() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+        alertDialog.setTitle(MainActivity.this.getResources().getString(R.string.GPSdisabled));
+        alertDialog.setMessage(MainActivity.this.getResources().getString(R.string.GPSalert));
+        alertDialog.setPositiveButton(MainActivity.this.getResources().getString(R.string.Settings), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                MainActivity.this.startActivity(intent);
+            }
+        });
+        alertDialog.setNegativeButton(MainActivity.this.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
 
-        @Override
-        public void onLocationChanged(Location location) {
-            showCoordinates(location);
-        }
+        alertDialog.show();
+    }
 
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
     //******************************************************
     // Serwis
 
@@ -198,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
     private void stopHunterService(){
         // Odbindowanie serwisu
         if (hBound) {
+          //  hService.setCallbacks(null);//////////////interfejs
             unbindService(mConnection);
             hBound = false;
         }
@@ -213,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
             HunterService.LocalBinder binder = (HunterService.LocalBinder) service;
             hService = binder.getService();
             hBound = true;
+          // hService.setCallbacks(MainActivity.this); ////interfejs
         }
 
         @Override

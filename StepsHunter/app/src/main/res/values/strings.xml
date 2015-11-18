@@ -4,11 +4,11 @@
     <string name="tvLatitude">Szerokość geograficzna</string>
     <string name="tvLongitude">Długość geograficzna</string>
     <string name="GPSenabled">GPS jest włączony</string>
-    <string name="GPSdisbaled">GPS jest wyłączony</string>
+    <string name="GPSdisabled">GPS jest wyłączony</string>
     <string name="GPSalert">GPS jest wyłączony. Chcesz przejść do ustawień GPS?</string>
     <string name="Settings">Ustawienia</string>
     <string name="Cancel">Anuluj</string>
     <string name="swGPS">GPS</string>
-    <string name="swLocation">Lokalizacja</string>
+    <string name="swLocation">Szukaj lokalizacji</string>
     <string name="file_with_gps">huntedGPS</string>
 </resources>

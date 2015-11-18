@@ -24,22 +24,5 @@ public class HunterServiceSingleton {
         this.context = context;
     }
 
-    public void showAlertSettings() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-        alertDialog.setTitle(context.getResources().getString(R.string.GPSdisbaled));
-        alertDialog.setMessage(context.getResources().getString(R.string.GPSalert));
-        alertDialog.setPositiveButton(context.getResources().getString(R.string.Settings), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                context.startActivity(intent);
-            }
-        });
-        alertDialog.setNegativeButton(context.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
 
-        alertDialog.show();
-    }
 }
