@@ -1,11 +1,13 @@
 package com.android.bigdata.stepshunter;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 public class HunterService extends Service {
     private IBinder mBinder = new LocalBinder();
@@ -28,14 +30,17 @@ public class HunterService extends Service {
             return HunterService.this;
         }
     }
-ss
-    public void DeleteFileWithGps(){
-        try{
-            File file = new File(getFilesDir(),getString(R.string.file_with_gps));
-            Boolean deleted = file.delete();
-        }catch(Exception e){
-            e.printStackTrace();
+
+    //true if the file was successfully deleted or never existed
+    //e.g. to delete file_with_gps use: DeleteInternalStorageFile(getString(R.string.file_with_gps));
+    public Boolean DeleteInternalStorageFile(String filename){
+        Context context = getApplicationContext();
+        Boolean deleted = true;
+
+        if( context.getFileStreamPath(filename).exists()) {
+            deleted = context.deleteFile(filename);
         }
+        return deleted;
     }
 
 }
