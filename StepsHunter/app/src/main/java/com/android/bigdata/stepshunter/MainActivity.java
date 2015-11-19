@@ -14,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         frequency = (EditText) findViewById(R.id.frequency_value);
-        frequency.setText(Long.toString(HunterServiceSingleton.getCurrentFrequenct()));
     }
 
     @Override
@@ -152,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
     //jeśli ma konczyc przy konczeniu akrywnosci to wywolac w onStop()
     private void stopHunterService(){
         // Odbindowanie serwisu
-        // Unbind from the service
         if (hBound) {
             unbindService(mConnection);
             hBound = false;
@@ -169,6 +169,9 @@ public class MainActivity extends AppCompatActivity {
             HunterService.LocalBinder binder = (HunterService.LocalBinder) service;
             hService = binder.getService();
             hBound = true;
+
+            //przypisanie aktualnej czestotliwosci do edittext
+            frequency.setText(Long.toString(hService.getCurrentFrequenct()));
         }
 
         @Override
