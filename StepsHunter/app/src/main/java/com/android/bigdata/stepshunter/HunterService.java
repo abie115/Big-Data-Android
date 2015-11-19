@@ -119,12 +119,12 @@ public class HunterService extends Service {
 
         @Override
         public void onProviderEnabled(String provider) {
-
+            mIServiceCallbacks.messageFromService(mContext.getResources().getString(R.string.GPSenabled));
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
+            mIServiceCallbacks.messageFromService(mContext.getResources().getString(R.string.GPSdisabled));
         }
     };
 

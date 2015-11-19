@@ -141,6 +141,12 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
        }
     }
 
+    @Override
+    public void messageFromService(String message) {
+            //tvLog.setText(tvLog.getText()+" "+message+"\n");
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
 
     public void showAlertSettings() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
@@ -169,14 +175,12 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         // Bindowanie serwisu
         Intent intent = new Intent(this, HunterService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        //  hService.getCurrentFrequenct();
     }
 
     //jeśli ma konczyc przy konczeniu akrywnosci to wywolac w onStop()
     private void stopHunterService(){
         // Odbindowanie serwisu
         if (hBound) {
-          //  hService.setCallbacks(null);//////////////interfejs
             unbindService(mConnection);
             hBound = false;
         }
@@ -192,7 +196,6 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
             HunterService.LocalBinder binder = (HunterService.LocalBinder) service;
             hService = binder.getService();
             hBound = true;
-          // hService.setCallbacks(MainActivity.this); ////interfejs
         }
 
         @Override

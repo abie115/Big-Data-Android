@@ -7,4 +7,5 @@ import android.location.Location;
  */
 public interface IServiceCallbacks {
     void showCoordinates(Location location);
+    void messageFromService(String message);
 }
