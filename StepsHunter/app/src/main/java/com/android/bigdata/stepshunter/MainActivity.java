@@ -37,28 +37,28 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     boolean inSettings=false;
     private HunterService hService;
     private boolean hBound = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         tvLatitude = (TextView) findViewById(R.id.tvLatitude);
         tvLongitude = (TextView) findViewById(R.id.tvLongitude);
         tvLog = (TextView) findViewById(R.id.tvLog);
         swGPS = (Switch) findViewById(R.id.swGPS);
 
-        hService=new HunterService(MainActivity.this);
+        hService=new HunterService(MainActivity.this,this);
 
         hService.startLocationManager();
-
+        //double wspolrzedna=hService.getCoordinates();
+        //tvLog.setText("ddd " + wspolrzedna + " ddd\n");
        swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     hService.providerEnabled();
-                    //jesli wlaczona lokalizacja to nie przechodzimy do settingow(false), starujemy gps
-                  if(hService.canGetProvider){
+                  if(hService.canGetProvider()){  //jesli wlaczona lokalizacja to nie przechodzimy do settingow(false), starujemy gps
                         inSettings=false;
                         Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
                         hService.startSearchLocation();
@@ -88,10 +88,8 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     @Override
     protected void onStart() {
         super.onStart();
-       //startHunterService();
-      //  startService(new Intent(this, HunterService.class));
-       //jesli przeslismy do settingow, to starujemy w onstart
-        if(inSettings){
+       // startHunterService();
+       if(inSettings){ //jesli przeszlismy do settingow, to starujemy w onstart
             hService.providerEnabled();
             if(hService.canGetProvider){
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     @Override
     protected void onStop() {
         super.onStop();
-        stopHunterService();
+       // stopHunterService();
 
     }
 
@@ -143,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
        }
     }
 
+
     public void showAlertSettings() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
         alertDialog.setTitle(MainActivity.this.getResources().getString(R.string.GPSdisabled));
@@ -170,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         // Bindowanie serwisu
         Intent intent = new Intent(this, HunterService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        //  hService.getCurrentFrequenct();
     }
 
     //jeśli ma konczyc przy konczeniu akrywnosci to wywolac w onStop()
