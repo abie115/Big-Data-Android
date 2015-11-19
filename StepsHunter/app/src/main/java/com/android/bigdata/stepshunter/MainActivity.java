@@ -1,11 +1,20 @@
 package com.android.bigdata.stepshunter;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,16 +22,58 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IServiceCallbacks {
 
     private HunterService hService;
     private boolean hBound = false;
+    boolean inSettings=false;
+
+    TextView tvLatitude;
+    TextView tvLongitude;
+    TextView tvLog;
+    Switch swGPS;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+        tvLatitude = (TextView) findViewById(R.id.tvLatitude);
+        tvLongitude = (TextView) findViewById(R.id.tvLongitude);
+        tvLog = (TextView) findViewById(R.id.tvLog);
+        swGPS = (Switch) findViewById(R.id.swGPS);
+
+        hService=new HunterService(MainActivity.this,this);
+
+        hService.startLocationManager();
+        //double wspolrzedna=hService.getCoordinates();
+        //tvLog.setText("ddd " + wspolrzedna + " ddd\n");
+       swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    hService.providerEnabled();
+                  if(hService.canGetProvider()){  //jesli wlaczona lokalizacja to nie przechodzimy do settingow(false), starujemy gps
+                        inSettings=false;
+                        Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
+                        hService.startSearchLocation();
+                    }else{
+                       inSettings=true;
+                       showAlertSettings();
+                    }
+                } else {
+                    hService.stopSearchLocation();
+                }
+             }
+         });
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -35,6 +86,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+       // startHunterService();
+       if(inSettings){ //jesli przeszlismy do settingow, to starujemy w onstart
+            hService.providerEnabled();
+            if(hService.canGetProvider){
+                Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
+                hService.startSearchLocation();
+                inSettings=false;
+            } else {
+                //swGPS.setChecked(false);
+                Toast.makeText(getApplicationContext(), getString(R.string.GPSdisabled), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+       // stopHunterService();
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -58,6 +134,42 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void showCoordinates(Location location){
+        //if (location != null) {
+            tvLatitude.setText(getString(R.string.tvLatitude)+": "+location.getLongitude());
+            tvLongitude.setText(getString(R.string.tvLongitude)+": "+location.getLatitude());
+            tvLog.setText(tvLog.getText()+" " + location.getLongitude()+" " + location.getLatitude()+"\n");
+       //}
+    }
+
+    @Override
+    public void messageFromService(String message) {
+            //tvLog.setText(tvLog.getText()+" "+message+"\n");
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+
+    public void showAlertSettings() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+        alertDialog.setTitle(MainActivity.this.getResources().getString(R.string.GPSdisabled));
+        alertDialog.setMessage(MainActivity.this.getResources().getString(R.string.GPSalert));
+        alertDialog.setPositiveButton(MainActivity.this.getResources().getString(R.string.Settings), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                MainActivity.this.startActivity(intent);
+            }
+        });
+        alertDialog.setNegativeButton(MainActivity.this.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        alertDialog.show();
+    }
+
+
     //******************************************************
     // Serwis
 
@@ -71,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
     //jeśli ma konczyc przy konczeniu akrywnosci to wywolac w onStop()
     private void stopHunterService(){
         // Odbindowanie serwisu
-        // Unbind from the service
         if (hBound) {
             unbindService(mConnection);
             hBound = false;
