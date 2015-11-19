@@ -62,4 +62,22 @@ public class HunterService extends Service {
         return erased;
     }
 
+    //true if open, write and close properly
+    //creates the file if it does not exist
+    //write line by line
+    public Boolean WriteToInternalStorageFile(String filename, String text){
+        FileOutputStream fileOutputStream;
+        Boolean written = true;
+
+        try{
+            fileOutputStream = openFileOutput(filename, MODE_APPEND);
+            fileOutputStream.write(text.concat("\n").getBytes());
+            fileOutputStream.close();
+        }catch(Exception e){
+            written = false;
+        }
+
+        return written;
+    }
+
 }
