@@ -134,11 +134,11 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
 
     @Override
     public void showCoordinates(Location location){
-        if (location != null) {
+        //if (location != null) {
             tvLatitude.setText(getString(R.string.tvLatitude)+": "+location.getLongitude());
             tvLongitude.setText(getString(R.string.tvLongitude)+": "+location.getLatitude());
             tvLog.setText(tvLog.getText()+" " + location.getLongitude()+" " + location.getLatitude()+"\n");
-       }
+       //}
     }
 
     @Override

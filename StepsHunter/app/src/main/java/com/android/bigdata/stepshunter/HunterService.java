@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.widget.Toast;
 
 public class HunterService extends Service {
@@ -28,6 +30,13 @@ public class HunterService extends Service {
     private IServiceCallbacks mIServiceCallbacks;
     private LocationManager locationManager;
     boolean canGetProvider = false;
+
+    private Location lastLocation;
+    double lastLocationTime;
+    boolean GPSFix=false;
+
+    private static long MIN_FREQUENCY_UPDATE=1000;
+    private static long MIN_DISTANCE_UPDATE=1;
 
     //dodaje do konstruktora interfej (must)!!!
     public HunterService(Context context,IServiceCallbacks iServiceCallbacks) { //usuniete
@@ -71,8 +80,8 @@ public class HunterService extends Service {
                 return;
             }
         }
-        //updatuje co 1s, odleglosc 1 metra
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_FREQUENCY_UPDATE, MIN_DISTANCE_UPDATE, locationListener);  //updatuje co 1s, odleglosc 1 metra
+        locationManager.addGpsStatusListener(gpsStatus); //wywoluje listenera statusu gps
     }
 
     public void stopSearchLocation(){
@@ -108,8 +117,12 @@ public class HunterService extends Service {
         @Override
         public void onLocationChanged(Location location) {
             //wywoluje funkcje showCoordinates jesli nastapi zmiana wspolrzednych
-            mIServiceCallbacks.showCoordinates(location);
-          //  setCoordinates(location.getLongitude());
+            if(location != null) {
+                mIServiceCallbacks.showCoordinates(location);
+                //  setCoordinates(location.getLongitude());
+                lastLocationTime = SystemClock.elapsedRealtime();
+                lastLocation = location;
+            }
         }
 
         @Override
@@ -125,6 +138,24 @@ public class HunterService extends Service {
         @Override
         public void onProviderDisabled(String provider) {
             mIServiceCallbacks.messageFromService(mContext.getResources().getString(R.string.GPSdisabled));
+        }
+    };
+
+    //sprawdzanie zasiegu GPS
+    private GpsStatus.Listener gpsStatus = new GpsStatus.Listener() {
+        @Override
+        public void onGpsStatusChanged(int event) {
+            if (event == GpsStatus.GPS_EVENT_SATELLITE_STATUS) {
+                if (lastLocation != null)
+                    GPSFix = (SystemClock.elapsedRealtime() - lastLocationTime) < 3000;
+                if (GPSFix) { //jesli jest zasieg
+                   // mIServiceCallbacks.messageFromService("Jest zasieg");
+                } else { //jesli nie ma zasiegu
+                    //mIServiceCallbacks.messageFromService("Nie ma zasiegu");
+                }
+            } else if (event == GpsStatus.GPS_EVENT_FIRST_FIX) {
+                GPSFix = true;
+            }
         }
     };
 
