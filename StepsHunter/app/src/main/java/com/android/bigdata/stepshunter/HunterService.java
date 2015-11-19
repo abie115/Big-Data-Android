@@ -6,8 +6,12 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class HunterService extends Service {
     private IBinder mBinder = new LocalBinder();
@@ -80,4 +84,29 @@ public class HunterService extends Service {
         return written;
     }
 
+    //returns the contents of a file (also empty) in one String or null if exception;
+    public String ReadFromInternalStorageFile(String filename) {
+        BufferedReader bufferedReader;
+        StringBuilder stringBuilder = new StringBuilder();
+        String oneLine;
+
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(openFileInput(filename)));
+
+            while ((oneLine = bufferedReader.readLine()) != null) {
+                stringBuilder.append(oneLine);
+                //Log.d("Testline", oneLine);
+            }
+
+            bufferedReader.close();
+
+        } catch (FileNotFoundException e) {
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+
+        //Log.d("Testall", stringBuilder.toString());
+        return stringBuilder.toString();
+    }
 }
