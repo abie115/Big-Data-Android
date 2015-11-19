@@ -43,4 +43,23 @@ public class HunterService extends Service {
         return deleted;
     }
 
+    //true if file never existed or if properly opened, override and closed
+    public Boolean EraseInternalStorageFile(String filename){
+        Context context = getApplicationContext();
+        FileOutputStream fileOutputStream;
+        String eraser = "";
+        Boolean erased = true;
+
+        if(context.getFileStreamPath(filename).exists())
+            try {
+                fileOutputStream = context.openFileOutput(filename, MODE_PRIVATE);
+                fileOutputStream.write(eraser.getBytes());
+                fileOutputStream.close();
+            } catch (Exception e) {
+                erased = false;
+            }
+
+        return erased;
+    }
+
 }
