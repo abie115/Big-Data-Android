@@ -1,15 +1,8 @@
 package com.android.bigdata.stepshunter;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Build;
-
-import android.app.Dialog;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -22,7 +15,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -106,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     protected void onStart() {
         super.onStart();
 
+
         //startHunterService();
 
 
@@ -157,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         //if (location != null) {
             tvLatitude.setText(getString(R.string.tvLatitude) + ": " + location.getLongitude());
             tvLongitude.setText(getString(R.string.tvLongitude) + ": " + location.getLatitude());
-            tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
+        tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
        //}
     }
 
@@ -223,9 +216,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     public void setDefaultFrequency(View view){
         /*
         HunterServiceSingleton.setDefaultFrequency();
-
         frequency.setText(Long.toString(HunterServiceSingleton.getCurrentFrequenct()));
-
         showDialog("Przywrócono " + HunterServiceSingleton.getCurrentFrequenct() + " sek.");
         */
 
@@ -239,8 +230,8 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     private void showDialog(String message){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message)
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int id){
+                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
                     }
                 });

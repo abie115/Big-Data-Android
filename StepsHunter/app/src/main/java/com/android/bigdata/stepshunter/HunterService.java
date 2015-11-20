@@ -1,45 +1,26 @@
 package com.android.bigdata.stepshunter;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-
 import android.Manifest;
-import android.app.Activity;
-
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-
 import android.content.pm.PackageManager;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
-
 import android.content.SharedPreferences;
-
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
-
-import static android.support.v4.app.NotificationCompat.DEFAULT_VIBRATE;
-
 import android.os.SystemClock;
-import android.widget.Toast;
-
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -101,7 +82,7 @@ public class HunterService extends Service {
         readFrequency();
     }
 
-    //***********************************
+//-----------------------------gps reading/connection lost-------------------------------------------
 
     //klasa umozliwiajaca bindowanie klientom
     public class LocalBinder extends Binder {
@@ -208,8 +189,66 @@ public class HunterService extends Service {
         }
     };
 
+    /*
+    public static void setCoordinates(double location){
+        wspolrzedna=location;
+    }
 
+    public static double getCoordinates(){
+        return wspolrzedna;
+    }
+    */
+//-----------------------------frequency of measuring gps -------------------------------------------
+    public void setContext(Context context){
+        mContext = context;
+    }
 
+    //zapis i odczyt ustawien
+    private void saveFrequency(){
+        SharedPreferences.Editor preferencesEditor = settings.edit();
+        preferencesEditor.putString(FREQUENCY_PREFS, Long.toString(CURRENT_FREQUENCY));
+        preferencesEditor.commit();
+    }
+
+    private void readFrequency(){
+        String savedFrequency = settings.getString(FREQUENCY_PREFS, "");
+
+        try {
+            CURRENT_FREQUENCY = Long.parseLong(savedFrequency);
+        } catch (NumberFormatException e){
+            CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
+            Log.d("HunterService", "Problem z pobieraniem częstotliwości.\n Wiadomość błędu: " + e.getMessage());
+        }
+    }
+
+    public void setCurrentFrequency(long newFrequency){
+        CURRENT_FREQUENCY = newFrequency * 1000;
+        saveFrequency();
+    }
+
+    public long getCurrentFrequenct(){
+        return CURRENT_FREQUENCY / 1000;
+    }
+
+    //powrot do domyslnej czestotliwosci
+    public void setDefaultFrequency(){
+        CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
+        saveFrequency();
+    }
+
+    public long getMinFrequency(){
+        return MIN_FREQUENCY / 1000;
+    }
+
+    public long getMaxFrequency(){
+        return MAX_FREQUENCY / 1000;
+    }
+
+    public void setServiceCallbacks(IServiceCallbacks callbacks){
+        mIServiceCallbacks = callbacks;
+    }
+
+//-------------------------------notification------------------------------------------------------
 
     private void createLostGpsSignalNotification() {
         NotificationCompat.Builder mBuilder;
@@ -220,6 +259,7 @@ public class HunterService extends Service {
                 .setAutoCancel(true);
 
         //Action when click on notification
+        //in the class 'HunterService' will be called functions The 'onBind()' and 'onCreate()'
         Intent resultIntent = new Intent(this, MainActivity.class);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -235,11 +275,7 @@ public class HunterService extends Service {
         mNotificationManager.notify(mId, mBuilder.build());
     }
 
-
-    public static void setCoordinates(double location){
-        wspolrzedna=location;
-    }
-
+//------------------------------------operiation on file-------------------------------------------------
 
     //true if the file was successfully deleted or never existed
     //e.g. to delete file_with_gps use: DeleteInternalStorageFile(getString(R.string.file_with_gps));
@@ -315,61 +351,6 @@ public class HunterService extends Service {
         //Log.d("Testall", stringBuilder.toString());
         return stringBuilder.toString();
     }
-
-    public static double getCoordinates(){
-        return wspolrzedna;
-    }
-
-
-    //************************************
-
-    public void setCurrentFrequency(long newFrequency){
-        CURRENT_FREQUENCY = newFrequency * 1000;
-        saveFrequency();
-    }
-
-    public long getCurrentFrequenct(){
-        return CURRENT_FREQUENCY / 1000;
-    }
-
-    //powrot do domyslnej czestotliwosci
-    public void setDefaultFrequency(){
-        CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
-        saveFrequency();
-    }
-
-    public long getMinFrequency(){
-        return MIN_FREQUENCY / 1000;
-    }
-
-    public long getMaxFrequency(){
-        return MAX_FREQUENCY / 1000;
-    }
-
-    public void setContext(Context context){
-        mContext = context;
-    }
-
-    public void setServiceCallbacks(IServiceCallbacks callbacks){
-        mIServiceCallbacks = callbacks;
-    }
-
-    //zapis i odczyt ustawien
-    private void saveFrequency(){
-        SharedPreferences.Editor preferencesEditor = settings.edit();
-        preferencesEditor.putString(FREQUENCY_PREFS, Long.toString(CURRENT_FREQUENCY));
-        preferencesEditor.commit();
-    }
-
-    private void readFrequency(){
-        String savedFrequency = settings.getString(FREQUENCY_PREFS,"");
-
-        try {
-            CURRENT_FREQUENCY = Long.parseLong(savedFrequency);
-        } catch (NumberFormatException e){
-            CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
-            Log.d("HunterService", "Problem z pobieraniem częstotliwości.\n Wiadomość błędu: " + e.getMessage());
-        }
-    }
+//--------------------------------------------------------------------------------------------------
 
 }
