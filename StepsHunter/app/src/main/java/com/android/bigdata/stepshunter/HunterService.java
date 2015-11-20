@@ -199,6 +199,7 @@ public class HunterService extends Service {
                 if (GPSFix) { //jesli jest zasieg
                    // mIServiceCallbacks.messageFromService("Jest zasieg");
                 } else { //jesli nie ma zasiegu
+                    createLostGpsSignalNotification();
                     //mIServiceCallbacks.messageFromService("Nie ma zasiegu");
                 }
             } else if (event == GpsStatus.GPS_EVENT_FIRST_FIX) {

@@ -59,10 +59,10 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         tvLog = (TextView) findViewById(R.id.tvLog);
         swGPS = (Switch) findViewById(R.id.swGPS);
 
-        //hService=new HunterService(MainActivity.this,this); //precz
-
+       // hService=new HunterService(MainActivity.this,this); //precz
+        startHunterService();
         //JEST W KLASIE WYWOLUJACEJ SERWIS
-        /*hService.startLocationManager();
+       // hService.startLocationManager();
         //double wspolrzedna=hService.getCoordinates();
         //tvLog.setText("ddd " + wspolrzedna + " ddd\n");
        swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 }
              }
          });
-        */
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     protected void onStart() {
         super.onStart();
 
-        startHunterService();
+        //startHunterService();
 
 
        if(inSettings){ //jesli przeszlismy do settingow, to starujemy w onstart
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     protected void onStop() {
         super.onStop();
         stopHunterService();
-        stopHunterService();
+        //stopHunterService();
     }
 
 
@@ -287,7 +287,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
             hService.startLocationManager();
             //double wspolrzedna=hService.getCoordinates();
             //tvLog.setText("ddd " + wspolrzedna + " ddd\n");
-            swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+           /* swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                         hService.stopSearchLocation();
                     }
                 }
-            });
+            });*/
         }
 
         @Override
