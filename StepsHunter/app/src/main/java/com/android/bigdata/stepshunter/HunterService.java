@@ -10,17 +10,23 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+
 import android.content.pm.PackageManager;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+
+import android.content.SharedPreferences;
+
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
@@ -56,13 +62,24 @@ public class HunterService extends Service {
     double lastLocationTime;
     boolean GPSFix=false;
 
-    private static long MIN_FREQUENCY_UPDATE=1000;
+    //rivate static long MIN_FREQUENCY_UPDATE=1000;
     private static long MIN_DISTANCE_UPDATE=1;
+
+    //ustawienia
+    private static final String PREFS_NAME = "HunterPrefsFile";
+    private static final String FREQUENCY_PREFS = "frequency";
+    private SharedPreferences settings;
+
+    //czas w milisekundach
+    private static final long DEFAULT_FREQUENCY = 30 * 1000;
+    private static final long MIN_FREQUENCY = 30 * 1000; //30 sekund
+    private static final long MAX_FREQUENCY = 2 * 60 * 1000; //2 minuty
+    private static long CURRENT_FREQUENCY;
 
     //dodaje do konstruktora interfej (must)!!!
     public HunterService(Context context,IServiceCallbacks iServiceCallbacks) { //usuniete
         this.mContext = context;
-        this.mIServiceCallbacks=iServiceCallbacks;
+        this.mIServiceCallbacks = iServiceCallbacks;
     }
 
     public HunterService(){ }
@@ -72,6 +89,16 @@ public class HunterService extends Service {
         // TODO: Return the communication channel to the service.
         //throw new UnsupportedOperationException("Not yet implemented");
         return mBinder;
+    }
+
+    @Override
+    public void onCreate(){
+        //Context context = getApplicationContext();
+        settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            // context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            //PreferenceManager.getDefaultSharedPreferences(context);
+            //getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        readFrequency();
     }
 
     //***********************************
@@ -101,7 +128,7 @@ public class HunterService extends Service {
                 return;
             }
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_FREQUENCY_UPDATE, MIN_DISTANCE_UPDATE, locationListener);  //updatuje co 1s, odleglosc 1 metra
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, CURRENT_FREQUENCY, MIN_DISTANCE_UPDATE, locationListener);  //updatuje co 1s, odleglosc 1 metra
         locationManager.addGpsStatusListener(gpsStatus); //wywoluje listenera statusu gps
     }
 
@@ -207,6 +234,7 @@ public class HunterService extends Service {
         mNotificationManager.notify(mId, mBuilder.build());
     }
 
+
     public static void setCoordinates(double location){
         wspolrzedna=location;
     }
@@ -289,6 +317,58 @@ public class HunterService extends Service {
 
     public static double getCoordinates(){
         return wspolrzedna;
+    }
+
+
+    //************************************
+
+    public void setCurrentFrequency(long newFrequency){
+        CURRENT_FREQUENCY = newFrequency * 1000;
+        saveFrequency();
+    }
+
+    public long getCurrentFrequenct(){
+        return CURRENT_FREQUENCY / 1000;
+    }
+
+    //powrot do domyslnej czestotliwosci
+    public void setDefaultFrequency(){
+        CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
+        saveFrequency();
+    }
+
+    public long getMinFrequency(){
+        return MIN_FREQUENCY / 1000;
+    }
+
+    public long getMaxFrequency(){
+        return MAX_FREQUENCY / 1000;
+    }
+
+    public void setContext(Context context){
+        mContext = context;
+    }
+
+    public void setServiceCallbacks(IServiceCallbacks callbacks){
+        mIServiceCallbacks = callbacks;
+    }
+
+    //zapis i odczyt ustawien
+    private void saveFrequency(){
+        SharedPreferences.Editor preferencesEditor = settings.edit();
+        preferencesEditor.putString(FREQUENCY_PREFS, Long.toString(CURRENT_FREQUENCY));
+        preferencesEditor.commit();
+    }
+
+    private void readFrequency(){
+        String savedFrequency = settings.getString(FREQUENCY_PREFS,"");
+
+        try {
+            CURRENT_FREQUENCY = Long.parseLong(savedFrequency);
+        } catch (NumberFormatException e){
+            CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
+            Log.d("HunterService", "Problem z pobieraniem częstotliwości.\n Wiadomość błędu: " + e.getMessage());
+        }
     }
 
 }
