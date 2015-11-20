@@ -93,10 +93,12 @@ public class HunterService extends Service {
     }
 
     public void startLocationManager(){
+        Log.d("startLocationManager","Włączone !!!!!!!!!!!!!!!!!!!!");
         locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
     }
 
     public void startSearchLocation(){
+        Log.d("startSearchLocation","Zaczynam szukać !!!!!!!!!!!!!!!!!!!!");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -114,6 +116,7 @@ public class HunterService extends Service {
     }
 
     public void stopSearchLocation(){
+        Log.d("stopSearchLocation","Kończę szukać !!!!!!!!!!!!!!!!!!!!");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling

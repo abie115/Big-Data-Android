@@ -15,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,12 +53,12 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         swGPS = (Switch) findViewById(R.id.swGPS);
 
        // hService=new HunterService(MainActivity.this,this); //precz
-        startHunterService();
+        //startHunterService();
         //JEST W KLASIE WYWOLUJACEJ SERWIS
        // hService.startLocationManager();
         //double wspolrzedna=hService.getCoordinates();
         //tvLog.setText("ddd " + wspolrzedna + " ddd\n");
-       swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+       /*swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                     hService.stopSearchLocation();
                 }
              }
-         });
+         });*/
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -98,8 +99,10 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     protected void onStart() {
         super.onStart();
 
+        Log.d("onStart", "hBound: "+hBound+" hService: "+hService);
 
-        //startHunterService();
+        if(hService == null)
+            startHunterService();
 
 
        if(inSettings){ //jesli przeszlismy do settingow, to starujemy w onstart
@@ -278,25 +281,30 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
             hService.startLocationManager();
             //double wspolrzedna=hService.getCoordinates();
             //tvLog.setText("ddd " + wspolrzedna + " ddd\n");
-           /* swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
+                        Log.d("SwitchON","Jestem !!!!!!!!!!!!!!!!!!!!");
                         hService.providerEnabled();
                         if(hService.canGetProvider()){  //jesli wlaczona lokalizacja to nie przechodzimy do settingow(false), starujemy gps
+                            Log.d("SwitchOFF","Mogę wziąć !!!!!!!!!!!!!!!!!!!!");
                             inSettings=false;
                             Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
                             hService.startSearchLocation();
                         }else{
+                            Log.d("SwitchOFF","Nie mogę wziąć  !!!!!!!!!!!!!!!!!!!!");
                             inSettings=true;
+
                             showAlertSettings();
                         }
                     } else {
+                        Log.d("SwitchOFF","Jestem !!!!!!!!!!!!!!!!!!!!");
                         hService.stopSearchLocation();
                     }
                 }
-            });*/
+            });
         }
 
         @Override
