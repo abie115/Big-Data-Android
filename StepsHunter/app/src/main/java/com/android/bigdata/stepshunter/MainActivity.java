@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         tvLongitude = (TextView) findViewById(R.id.tvLongitude);
         tvLog = (TextView) findViewById(R.id.tvLog);
         swGPS = (Switch) findViewById(R.id.swGPS);
-
+        tvLog.setText(tvLog.getText()+"\n");
        // hService=new HunterService(MainActivity.this,this); //precz
         //startHunterService();
         //JEST W KLASIE WYWOLUJACEJ SERWIS
@@ -151,8 +151,8 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     @Override
     public void showCoordinates(Location location){
         //if (location != null) {
-            tvLatitude.setText(getString(R.string.tvLatitude) + ": " + location.getLongitude());
-            tvLongitude.setText(getString(R.string.tvLongitude) + ": " + location.getLatitude());
+            tvLatitude.setText(getString(R.string.tvLatitude) + " " + location.getLongitude());
+            tvLongitude.setText(getString(R.string.tvLongitude) + " " + location.getLatitude());
         tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
        //}
     }

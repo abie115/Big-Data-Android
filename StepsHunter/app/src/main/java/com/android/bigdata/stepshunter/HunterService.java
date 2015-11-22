@@ -42,6 +42,7 @@ public class HunterService extends Service {
     private Location lastLocation;
     double lastLocationTime;
     boolean GPSFix=false;
+    boolean isRange=false;
 
     //rivate static long MIN_FREQUENCY_UPDATE=1000;
     private static long MIN_DISTANCE_UPDATE=1;
@@ -177,17 +178,30 @@ public class HunterService extends Service {
     private GpsStatus.Listener gpsStatus = new GpsStatus.Listener() {
         @Override
         public void onGpsStatusChanged(int event) {
+            Log.d("Testline", String.valueOf(isRange));
             if (event == GpsStatus.GPS_EVENT_SATELLITE_STATUS) {
                 if (lastLocation != null)
                     GPSFix = (SystemClock.elapsedRealtime() - lastLocationTime) < 3000;
-                if (GPSFix) { //jesli jest zasieg
-                   // mIServiceCallbacks.messageFromService("Jest zasieg");
-                } else { //jesli nie ma zasiegu
-                    createLostGpsSignalNotification();
-                    //mIServiceCallbacks.messageFromService("Nie ma zasiegu");
+                if (GPSFix) {
+                    if(isRange==false){
+                        hideLostGpsSignalNotification();
+                    }
+                    isRange=true;
+                    Log.d("Testline", "jest zasieg");
+                } else {
+                    Log.d("brak zasiegu", "jestem");
+                    if(isRange==true){
+                        createLostGpsSignalNotification();
+                    }
+                    isRange=false;
                 }
             } else if (event == GpsStatus.GPS_EVENT_FIRST_FIX) {
                 GPSFix = true;
+                if(isRange==false){
+                    hideLostGpsSignalNotification();
+                }
+                isRange=true;
+                Log.d("eve_firsy_fix", "jestem");
             }
         }
     };
@@ -276,6 +290,11 @@ public class HunterService extends Service {
         // mId allows you to update the notification later on.
         int mId = 1;
         mNotificationManager.notify(mId, mBuilder.build());
+    }
+
+    private void hideLostGpsSignalNotification(){
+        NotificationManager mNotificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancelAll();
     }
 
 //------------------------------------operiation on file-------------------------------------------------

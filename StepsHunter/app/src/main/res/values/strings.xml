@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">StepsHunter</string>
     <string name="action_settings">Ustawienia</string>
-    <string name="tvLatitude">Szerokość geograficzna</string>
-    <string name="tvLongitude">Długość geograficzna</string>
+    <string name="tvLatitude">Szerokość geograficzna:</string>
+    <string name="tvLongitude">Długość geograficzna:</string>
+    <string name="tvLog">Logi:</string>
     <string name="GPSenabled">GPS jest włączony</string>
     <string name="GPSdisabled">GPS jest wyłączony</string>
     <string name="GPSalert">GPS jest wyłączony. Chcesz przejść do ustawień GPS?</string>
