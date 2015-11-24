@@ -25,4 +25,5 @@
     <!-- Log messages -->
     <string name="tag_writeToFile">WriteToFile</string>
     <string name="tag_readFromFile">ReadFromFile</string>
+    
 </resources>
