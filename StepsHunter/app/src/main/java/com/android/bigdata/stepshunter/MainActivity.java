@@ -1,5 +1,7 @@
 package com.android.bigdata.stepshunter;
 
+import com.android.bigdata.storagedata.InternalStorageFile;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.location.Location;
@@ -15,6 +17,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +27,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.EditText;
+
 
 
 public class MainActivity extends AppCompatActivity implements IServiceCallbacks {
@@ -152,6 +156,18 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
             tvLongitude.setText(getString(R.string.tvLongitude) + ": " + location.getLatitude());
         tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
        //}
+
+        InternalStorageFile internalStorageFile = new InternalStorageFile();
+        internalStorageFile.writeToGpsFile(getApplicationContext(),
+                getString(R.string.tvLatitude) + ": " + location.getLongitude()
+                        + " " +
+                        getString(R.string.tvLongitude) + ": " + location.getLatitude()
+        );
+
+        String s = internalStorageFile.readFromGpsFile(getApplicationContext());
+
+       Log.d("TestZapis/Odczyt", s);
+
     }
 
     @Override
