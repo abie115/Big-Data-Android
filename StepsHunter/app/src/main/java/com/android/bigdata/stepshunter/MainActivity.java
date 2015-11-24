@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     private boolean hBound = false;
     boolean inSettings=false;
     private IServiceCallbacks hThis = this;
+    private boolean isHunting = false;
 
     TextView tvLatitude;
     TextView tvLongitude;
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     protected void onStart() {
         super.onStart();
 
-        Log.d("onStart", "hBound: "+hBound+" hService: "+hService);
+        Log.d("onStart", "hBound: " + hBound + " hService: " + hService);
 
         if(hService == null)
             startHunterService();
@@ -111,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
                 hService.startSearchLocation();
                 inSettings=false;
+                isHunting = true;
+                frequency.setEnabled(false);
             } else {
                 //swGPS.setChecked(false);
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSdisabled), Toast.LENGTH_LONG).show();
@@ -187,47 +190,52 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     public void changeFrequency(View view){
         String message;
 
-        if(frequency.getText().toString().matches(""))
-            message = "Musisz podać wartość.";
-        else {
-            long newFrequency = Long.parseLong(frequency.getText().toString());
+        if(isHunting){
+            message = getString(R.string.frequency_change_warning);
+        } else {
 
-            /*
-            if (newFrequency < HunterServiceSingleton.getMinFrequency())
-                message = "Podana wartość jest zbyt niska.";
-            else if (newFrequency > HunterServiceSingleton.getMaxFrequency())
-                message = "Podana wartość jest zbyt wysoka.";
+            if(frequency.getText().toString().matches(""))
+                message = "Musisz podać wartość.";
             else {
-                HunterServiceSingleton.setCurrentFrequency(newFrequency);
-                message = "Zmieniono na " + HunterServiceSingleton.getCurrentFrequenct() + " sek.";
-            }
-            */
+                long newFrequency = Long.parseLong(frequency.getText().toString());
 
-            if (newFrequency < hService.getMinFrequency())
-                message = "Podana wartość jest zbyt niska.";
-            else if (newFrequency > hService.getMaxFrequency())
-                message = "Podana wartość jest zbyt wysoka.";
-            else {
-                hService.setCurrentFrequency(newFrequency);
-                message = "Zmieniono na " + hService.getCurrentFrequenct() + " sek.";
+                /*
+                if (newFrequency < HunterServiceSingleton.getMinFrequency())
+                    message = "Podana wartość jest zbyt niska.";
+                else if (newFrequency > HunterServiceSingleton.getMaxFrequency())
+                    message = "Podana wartość jest zbyt wysoka.";
+                else {
+                    HunterServiceSingleton.setCurrentFrequency(newFrequency);
+                    message = "Zmieniono na " + HunterServiceSingleton.getCurrentFrequenct() + " sek.";
+                }
+                */
+
+                if (newFrequency < hService.getMinFrequency())
+                    message = "Podana wartość jest zbyt niska.";
+                else if (newFrequency > hService.getMaxFrequency())
+                    message = "Podana wartość jest zbyt wysoka.";
+                else {
+                    hService.setCurrentFrequency(newFrequency);
+                    message = "Zmieniono na " + hService.getCurrentFrequenct() + " sek.";
+                }
             }
+
         }
 
         showDialog(message);
     }
 
     public void setDefaultFrequency(View view){
-        /*
-        HunterServiceSingleton.setDefaultFrequency();
-        frequency.setText(Long.toString(HunterServiceSingleton.getCurrentFrequenct()));
-        showDialog("Przywrócono " + HunterServiceSingleton.getCurrentFrequenct() + " sek.");
-        */
+        String message;
 
-        hService.setDefaultFrequency();
-
-        frequency.setText(Long.toString(hService.getCurrentFrequenct()));
-
-        showDialog("Przywrócono " + hService.getCurrentFrequenct() + " sek.");
+        if(isHunting){
+            message = getString(R.string.frequency_change_warning);
+        } else {
+            hService.setDefaultFrequency();
+            frequency.setText(Long.toString(hService.getCurrentFrequenct()));
+            message = "Przywrócono " + hService.getCurrentFrequenct() + " sek.";
+        }
+        showDialog(message);
     }
 
     private void showDialog(String message){
@@ -293,6 +301,8 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                             inSettings=false;
                             Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
                             hService.startSearchLocation();
+                            isHunting = true;
+                            frequency.setEnabled(false);
                         }else{
                             Log.d("SwitchOFF","Nie mogę wziąć  !!!!!!!!!!!!!!!!!!!!");
                             inSettings=true;
@@ -302,6 +312,8 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                     } else {
                         Log.d("SwitchOFF","Jestem !!!!!!!!!!!!!!!!!!!!");
                         hService.stopSearchLocation();
+                        isHunting = false;
+                        frequency.setEnabled(true);
                     }
                 }
             });
