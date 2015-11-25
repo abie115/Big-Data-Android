@@ -96,7 +96,7 @@ public class HunterService extends Service {
     }
 
     public void startSearchLocation(){
-        Log.d("startSearchLocation","Zaczynam szukać !!!!!!!!!!!!!!!!!!!!");
+        Log.d("startSearchLocation", "Zaczynam szukać !!!!!!!!!!!!!!!!!!!!");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -114,7 +114,7 @@ public class HunterService extends Service {
     }
 
     public void stopSearchLocation(){
-        Log.d("stopSearchLocation","Kończę szukać !!!!!!!!!!!!!!!!!!!!");
+        Log.d("stopSearchLocation", "Kończę szukać !!!!!!!!!!!!!!!!!!!!");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -272,19 +272,17 @@ public class HunterService extends Service {
                 .setContentText(getString(R.string.notification_text_lost_gps_signal))
                 .setAutoCancel(true);
 
-        //Action when click on notification
-        //in the class 'HunterService' will be called functions The 'onBind()' and 'onCreate()'
         Intent resultIntent = new Intent(this, MainActivity.class);
+        resultIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the back stack for the Intent (but not the Intent itself)
         stackBuilder.addParentStack(MainActivity.class);
 
         stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // mId allows you to update the notification later on.
+       
         int mId = 1;
         mNotificationManager.notify(mId, mBuilder.build());
     }
