@@ -1,5 +1,7 @@
 package com.android.bigdata.stepshunter;
 
+import com.android.bigdata.storagedata.InternalStorageFile;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.location.Location;
@@ -25,6 +27,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.EditText;
+
 
 
 public class MainActivity extends AppCompatActivity implements IServiceCallbacks {
@@ -119,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSdisabled), Toast.LENGTH_LONG).show();
             }
         }
+
     }
 
     @Override
@@ -158,6 +162,20 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
             tvLongitude.setText(getString(R.string.tvLongitude) + " " + location.getLatitude());
         tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
        //}
+
+        //-------demonstracja dzialania klasy internalStorageFile------
+        //--------------------do zmiany po przetestowaniu---------------
+        InternalStorageFile internalStorageFile = new InternalStorageFile(getApplicationContext());
+        internalStorageFile.writeToGpsFile(
+                getString(R.string.tvLatitude) + ": " + location.getLongitude()
+                        + " " +
+                        getString(R.string.tvLongitude) + ": " + location.getLatitude()
+        );
+
+        String s = internalStorageFile.readFromGpsFile();
+        Log.d("TestZapis/Odczyt", s);
+        //--------------------------------------------------------------------
+
     }
 
     @Override

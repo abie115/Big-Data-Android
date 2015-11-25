@@ -1,5 +1,7 @@
 package com.android.bigdata.stepshunter;
 
+import com.android.bigdata.storagedata.InternalStorageFile;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.Manifest;
@@ -20,11 +22,6 @@ import android.util.Log;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.os.SystemClock;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 
 public class HunterService extends Service {
@@ -296,83 +293,4 @@ public class HunterService extends Service {
         NotificationManager mNotificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancelAll();
     }
-
-//------------------------------------operiation on file-------------------------------------------------
-
-    //true if the file was successfully deleted or never existed
-    //e.g. to delete file_with_gps use: DeleteInternalStorageFile(getString(R.string.file_with_gps));
-    public Boolean DeleteInternalStorageFile(String filename){
-        Context context = getApplicationContext();
-        Boolean deleted = true;
-
-        if( context.getFileStreamPath(filename).exists()) {
-            deleted = context.deleteFile(filename);
-        }
-        return deleted;
-    }
-
-    //true if file never existed or if properly opened, override and closed
-    public Boolean EraseInternalStorageFile(String filename){
-        Context context = getApplicationContext();
-        FileOutputStream fileOutputStream;
-        String eraser = "";
-        Boolean erased = true;
-
-        if(context.getFileStreamPath(filename).exists())
-            try {
-                fileOutputStream = context.openFileOutput(filename, MODE_PRIVATE);
-                fileOutputStream.write(eraser.getBytes());
-                fileOutputStream.close();
-            } catch (Exception e) {
-                erased = false;
-            }
-
-        return erased;
-    }
-
-    //true if open, write and close properly
-    //creates the file if it does not exist
-    //write line by line
-    public Boolean WriteToInternalStorageFile(String filename, String text){
-        FileOutputStream fileOutputStream;
-        Boolean written = true;
-
-        try{
-            fileOutputStream = openFileOutput(filename, MODE_APPEND);
-            fileOutputStream.write(text.concat("\n").getBytes());
-            fileOutputStream.close();
-        }catch(Exception e){
-            written = false;
-        }
-
-        return written;
-    }
-
-    //returns the contents of a file (also empty) in one String or null if exception;
-    public String ReadFromInternalStorageFile(String filename) {
-        BufferedReader bufferedReader;
-        StringBuilder stringBuilder = new StringBuilder();
-        String oneLine;
-
-        try {
-            bufferedReader = new BufferedReader(new InputStreamReader(openFileInput(filename)));
-
-            while ((oneLine = bufferedReader.readLine()) != null) {
-                stringBuilder.append(oneLine);
-                //Log.d("Testline", oneLine);
-            }
-
-            bufferedReader.close();
-
-        } catch (FileNotFoundException e) {
-            return null;
-        } catch (IOException e) {
-            return null;
-        }
-
-        //Log.d("Testall", stringBuilder.toString());
-        return stringBuilder.toString();
-    }
-//--------------------------------------------------------------------------------------------------
-
 }
