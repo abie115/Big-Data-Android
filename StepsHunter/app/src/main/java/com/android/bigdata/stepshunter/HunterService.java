@@ -26,12 +26,10 @@ import android.os.SystemClock;
 
 public class HunterService extends Service {
 
-
-    private static double wspolrzedna = 0;
     private IBinder mBinder = new LocalBinder();
 
-    private /*final*/ Context mContext;
-    // Rejestrujemy interfejs
+    private Context mContext;
+    // interface rejestration
     private IServiceCallbacks mIServiceCallbacks;
     private LocationManager locationManager;
     boolean canGetProvider = false;
@@ -41,18 +39,17 @@ public class HunterService extends Service {
     boolean GPSFix=false;
     boolean isRange=false;
 
-    //rivate static long MIN_FREQUENCY_UPDATE=1000;
     private static long MIN_DISTANCE_UPDATE=1;
 
-    //ustawienia
+    //settings
     private static final String PREFS_NAME = "HunterPrefsFile";
     private static final String FREQUENCY_PREFS = "frequency";
     private SharedPreferences settings;
 
-    //czas w milisekundach
+    //time in milliseconds
     private static final long DEFAULT_FREQUENCY = 30 * 1000;
-    private static final long MIN_FREQUENCY = 30 * 1000; //30 sekund
-    private static final long MAX_FREQUENCY = 2 * 60 * 1000; //2 minuty
+    private static final long MIN_FREQUENCY = 30 * 1000; //30 seconds
+    private static final long MAX_FREQUENCY = 2 * 60 * 1000; //2 minutes
     private static long CURRENT_FREQUENCY;
 
     //dodaje do konstruktora interfej (must)!!!
@@ -65,30 +62,27 @@ public class HunterService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        //throw new UnsupportedOperationException("Not yet implemented");
         return mBinder;
     }
 
     @Override
     public void onCreate(){
-        //Context context = getApplicationContext();
         settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-            // context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-            //PreferenceManager.getDefaultSharedPreferences(context);
-            //getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         readFrequency();
     }
 
-//-----------------------------gps reading/connection lost-------------------------------------------
-
-    //klasa umozliwiajaca bindowanie klientom
+    //class for binging service to clients
     public class LocalBinder extends Binder {
         HunterService getService (){
             return HunterService.this;
         }
 
     }
+
+    public void setContext(Context context){
+        mContext = context;
+    }
+//-----------------------------gps reading/connection lost-------------------------------------------
 
     public void startLocationManager(){
         Log.d("startLocationManager","Włączone !!!!!!!!!!!!!!!!!!!!");
@@ -99,31 +93,17 @@ public class HunterService extends Service {
         Log.d("startSearchLocation", "Zaczynam szukać !!!!!!!!!!!!!!!!!!!!");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
                 return;
             }
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, CURRENT_FREQUENCY, MIN_DISTANCE_UPDATE, locationListener);  //updatuje co 1s, odleglosc 1 metra
-        locationManager.addGpsStatusListener(gpsStatus); //wywoluje listenera statusu gps
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, CURRENT_FREQUENCY, MIN_DISTANCE_UPDATE, locationListener);  //update every CURRENT_FREQUENCY, 1 m
+        locationManager.addGpsStatusListener(gpsStatus); //gps status listener
     }
 
     public void stopSearchLocation(){
         Log.d("stopSearchLocation", "Kończę szukać !!!!!!!!!!!!!!!!!!!!");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for Activity#requestPermissions for more details.
                 return;
             }
         }
@@ -146,19 +126,16 @@ public class HunterService extends Service {
 
         @Override
         public void onLocationChanged(Location location) {
-            //wywoluje funkcje showCoordinates jesli nastapi zmiana wspolrzednych
+            //calls function showCoordinates if coordinates was changed
             if(location != null) {
                 mIServiceCallbacks.showCoordinates(location);
-                //  setCoordinates(location.getLongitude());
                 lastLocationTime = SystemClock.elapsedRealtime();
                 lastLocation = location;
             }
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
+        public void onStatusChanged(String provider, int status, Bundle extras) {}
 
         @Override
         public void onProviderEnabled(String provider) {
@@ -171,7 +148,7 @@ public class HunterService extends Service {
         }
     };
 
-    //sprawdzanie zasiegu GPS
+    //check GPS range
     private GpsStatus.Listener gpsStatus = new GpsStatus.Listener() {
         @Override
         public void onGpsStatusChanged(int event) {
@@ -203,21 +180,10 @@ public class HunterService extends Service {
         }
     };
 
-    /*
-    public static void setCoordinates(double location){
-        wspolrzedna=location;
-    }
 
-    public static double getCoordinates(){
-        return wspolrzedna;
-    }
-    */
 //-----------------------------frequency of measuring gps -------------------------------------------
-    public void setContext(Context context){
-        mContext = context;
-    }
 
-    //zapis i odczyt ustawien
+    //write and read settings
     private void saveFrequency(){
         SharedPreferences.Editor preferencesEditor = settings.edit();
         preferencesEditor.putString(FREQUENCY_PREFS, Long.toString(CURRENT_FREQUENCY));
@@ -244,7 +210,7 @@ public class HunterService extends Service {
         return CURRENT_FREQUENCY / 1000;
     }
 
-    //powrot do domyslnej czestotliwosci
+    //comeback to default frequency
     public void setDefaultFrequency(){
         CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
         saveFrequency();

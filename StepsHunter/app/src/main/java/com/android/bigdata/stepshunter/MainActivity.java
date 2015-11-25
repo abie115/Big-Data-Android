@@ -56,32 +56,8 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         tvLog = (TextView) findViewById(R.id.tvLog);
         swGPS = (Switch) findViewById(R.id.swGPS);
         tvLog.setText(tvLog.getText()+"\n");
-       // hService=new HunterService(MainActivity.this,this); //precz
-        //startHunterService();
-        //JEST W KLASIE WYWOLUJACEJ SERWIS
-       // hService.startLocationManager();
-        //double wspolrzedna=hService.getCoordinates();
-        //tvLog.setText("ddd " + wspolrzedna + " ddd\n");
-       /*swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    hService.providerEnabled();
-                  if(hService.canGetProvider()){  //jesli wlaczona lokalizacja to nie przechodzimy do settingow(false), starujemy gps
-                        inSettings=false;
-                        Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
-                        hService.startSearchLocation();
-                    }else{
-                       inSettings=true;
-                       showAlertSettings();
-                    }
-                } else {
-                    hService.stopSearchLocation();
-                }
-             }
-         });*/
-
+        frequency = (EditText) findViewById(R.id.frequency_value);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -94,9 +70,6 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                         .setAction("Action", null).show();
             }
         });
-
-
-        frequency = (EditText) findViewById(R.id.frequency_value);
     }
 
     @Override
@@ -106,10 +79,9 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         Log.d("onStart", "hBound: " + hBound + " hService: " + hService);
 
         if(hService == null)
-            startHunterService();
+            bindHunterService();
 
-
-       if(inSettings){ //jesli przeszlismy do settingow, to starujemy w onstart
+       if(inSettings){ //if comeback from settings, start from onstart
             hService.providerEnabled();
             if(hService.canGetProvider){
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
@@ -118,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 isHunting = true;
                 frequency.setEnabled(false);
             } else {
-                //swGPS.setChecked(false);
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSdisabled), Toast.LENGTH_LONG).show();
             }
         }
@@ -128,8 +99,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     @Override
     protected void onStop() {
         super.onStop();
-        stopHunterService();
-        //stopHunterService();
+        unbindHunterService();
     }
 
 
@@ -142,29 +112,21 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void showCoordinates(Location location){
-        //if (location != null) {
-            tvLatitude.setText(getString(R.string.tvLatitude) + " " + location.getLongitude());
-            tvLongitude.setText(getString(R.string.tvLongitude) + " " + location.getLatitude());
+        tvLatitude.setText(getString(R.string.tvLatitude) + " " + location.getLongitude());
+        tvLongitude.setText(getString(R.string.tvLongitude) + " " + location.getLatitude());
         tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
-       //}
 
-        //-------demonstracja dzialania klasy internalStorageFile------
-        //--------------------do zmiany po przetestowaniu---------------
+        //-------demonstration how class internalStorageFile works------
+        //--------------------to change after testing-------------------
         InternalStorageFile internalStorageFile = new InternalStorageFile(getApplicationContext());
         internalStorageFile.writeToGpsFile(
                 getString(R.string.tvLatitude) + ": " + location.getLongitude()
@@ -180,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
 
     @Override
     public void messageFromService(String message) {
-            //tvLog.setText(tvLog.getText()+" "+message+"\n");
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
@@ -204,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         alertDialog.show();
     }
 
-    // czestotliwosc
+    // frequency
     public void changeFrequency(View view){
         String message;
 
@@ -216,17 +177,6 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 message = "Musisz podać wartość.";
             else {
                 long newFrequency = Long.parseLong(frequency.getText().toString());
-
-                /*
-                if (newFrequency < HunterServiceSingleton.getMinFrequency())
-                    message = "Podana wartość jest zbyt niska.";
-                else if (newFrequency > HunterServiceSingleton.getMaxFrequency())
-                    message = "Podana wartość jest zbyt wysoka.";
-                else {
-                    HunterServiceSingleton.setCurrentFrequency(newFrequency);
-                    message = "Zmieniono na " + HunterServiceSingleton.getCurrentFrequenct() + " sek.";
-                }
-                */
 
                 if (newFrequency < hService.getMinFrequency())
                     message = "Podana wartość jest zbyt niska.";
@@ -269,18 +219,16 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
 
 
     //******************************************************
-    // Serwis
+    // Service
 
-    //jesli ma startowac przy rozpoczeciu aktywnosci to wywolac w onStart()
-    private void startHunterService(){
-        // Bindowanie serwisu
+    private void bindHunterService(){
+        // service binding
         Intent intent = new Intent(this, HunterService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    //jeśli ma konczyc przy konczeniu akrywnosci to wywolac w onStop()
-    private void stopHunterService(){
-        // Odbindowanie serwisu
+    private void unbindHunterService(){
+        // service unbinding
         if (hBound) {
             unbindService(mConnection);
             hBound = false;
@@ -289,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
 
     //**********************************************
 
-    // definiuje wywolania serwisu, parametry podane przez bindService()
+    // define service call, parameters gived by bindService()
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -301,12 +249,10 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
             hService.setContext(MainActivity.this);
             hService.setServiceCallbacks(hThis);
 
-            //przypisanie aktualnej czestotliwosci do edittext
+            //set current frequency to edittext
             frequency.setText(Long.toString(hService.getCurrentFrequenct()));
 
             hService.startLocationManager();
-            //double wspolrzedna=hService.getCoordinates();
-            //tvLog.setText("ddd " + wspolrzedna + " ddd\n");
             swGPS.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
                 @Override
@@ -314,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                     if (isChecked) {
                         Log.d("SwitchON","Jestem !!!!!!!!!!!!!!!!!!!!");
                         hService.providerEnabled();
-                        if(hService.canGetProvider()){  //jesli wlaczona lokalizacja to nie przechodzimy do settingow(false), starujemy gps
+                        if(hService.canGetProvider()){  //if localisation is on don't go to settings(false), start gps
                             Log.d("SwitchOFF","Mogę wziąć !!!!!!!!!!!!!!!!!!!!");
                             inSettings=false;
                             Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
