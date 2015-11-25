@@ -21,9 +21,10 @@
     <string name="notification_title_lost_gps_signal">StepsHunter</string>
     <string name="notification_text_lost_gps_signal">Sygnał GPS został utracony</string>
 
-    <string name="toast_internal_storage_error">Wystąpił nieoczekiwany problem. Jeśli komunikat powtórzy się zainstaluj aplikację ponownie</string>
+    <string name="toast_internal_storage_error">Wystąpił nieoczekiwany problem z pamięcią. Jeśli komunikat powtórzy się, zainstaluj aplikację ponownie</string>
     <!-- Log messages -->
-    <string name="tag_writeToFile">WriteToFile</string>
-    <string name="tag_readFromFile">ReadFromFile</string>
-    
+    <string name="tag_internalStorageFile">InternalStorageFile</string>
+    <string name="msg_fileDeletedException">Attempt to remove a nonexistent file</string>
+
+    deleteFile
 </resources>

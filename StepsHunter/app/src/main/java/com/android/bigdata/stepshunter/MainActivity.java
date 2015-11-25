@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSdisabled), Toast.LENGTH_LONG).show();
             }
         }
+
     }
 
     @Override
@@ -157,16 +158,18 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
        //}
 
-        InternalStorageFile internalStorageFile = new InternalStorageFile();
-        internalStorageFile.writeToGpsFile(getApplicationContext(),
+        //-------demonstracja dzialania klasy internalStorageFile------
+        //--------------------do zmiany po przetestowaniu---------------
+        InternalStorageFile internalStorageFile = new InternalStorageFile(getApplicationContext());
+        internalStorageFile.writeToGpsFile(
                 getString(R.string.tvLatitude) + ": " + location.getLongitude()
                         + " " +
                         getString(R.string.tvLongitude) + ": " + location.getLatitude()
         );
 
-        String s = internalStorageFile.readFromGpsFile(getApplicationContext());
-
-       Log.d("TestZapis/Odczyt", s);
+        String s = internalStorageFile.readFromGpsFile();
+        Log.d("TestZapis/Odczyt", s);
+        //--------------------------------------------------------------------
 
     }
 
