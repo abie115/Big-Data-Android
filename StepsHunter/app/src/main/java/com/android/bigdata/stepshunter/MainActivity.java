@@ -17,7 +17,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,8 +75,6 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     protected void onStart() {
         super.onStart();
 
-        Log.d("onStart", "hBound: " + hBound + " hService: " + hService);
-
         if(hService == null)
             bindHunterService();
 
@@ -121,21 +118,20 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
 
     @Override
     public void showCoordinates(Location location){
-        tvLatitude.setText(getString(R.string.tvLatitude) + " " + location.getLongitude());
-        tvLongitude.setText(getString(R.string.tvLongitude) + " " + location.getLatitude());
+        tvLatitude.setText(getString(R.string.tvLatitude) + location.getLongitude());
+        tvLongitude.setText(getString(R.string.tvLongitude) + location.getLatitude());
         tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
 
         //-------demonstration how class internalStorageFile works------
         //--------------------to change after testing-------------------
         InternalStorageFile internalStorageFile = new InternalStorageFile(getApplicationContext());
         internalStorageFile.writeToGpsFile(
-                getString(R.string.tvLatitude) + ": " + location.getLongitude()
+                getString(R.string.tvLatitude) + location.getLongitude()
                         + " " +
-                        getString(R.string.tvLongitude) + ": " + location.getLatitude()
+                        getString(R.string.tvLongitude) + location.getLatitude()
         );
 
         String s = internalStorageFile.readFromGpsFile();
-        Log.d("TestZapis/Odczyt", s);
         //--------------------------------------------------------------------
 
     }
@@ -148,15 +144,15 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
 
     public void showAlertSettings() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-        alertDialog.setTitle(MainActivity.this.getResources().getString(R.string.GPSdisabled));
-        alertDialog.setMessage(MainActivity.this.getResources().getString(R.string.GPSalert));
-        alertDialog.setPositiveButton(MainActivity.this.getResources().getString(R.string.Settings), new DialogInterface.OnClickListener() {
+        alertDialog.setTitle(getString(R.string.GPSdisabled));
+        alertDialog.setMessage(getString(R.string.GPSalert));
+        alertDialog.setPositiveButton(getString(R.string.Settings), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 MainActivity.this.startActivity(intent);
             }
         });
-        alertDialog.setNegativeButton(MainActivity.this.getResources().getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(getString(R.string.Cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
@@ -174,17 +170,17 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         } else {
 
             if(frequency.getText().toString().matches(""))
-                message = "Musisz podać wartość.";
+                message = getString(R.string.frequency_change_empty_field);
             else {
                 long newFrequency = Long.parseLong(frequency.getText().toString());
 
                 if (newFrequency < hService.getMinFrequency())
-                    message = "Podana wartość jest zbyt niska.";
+                    message = getString(R.string.frequency_change_to_low);
                 else if (newFrequency > hService.getMaxFrequency())
-                    message = "Podana wartość jest zbyt wysoka.";
+                    message = getString(R.string.frequency_change_to_high);
                 else {
                     hService.setCurrentFrequency(newFrequency);
-                    message = "Zmieniono na " + hService.getCurrentFrequenct() + " sek.";
+                    message = getString(R.string.frequency_change_changed_to) + hService.getCurrentFrequenct() + getString(R.string.frequency_change_unit);
                 }
             }
 
@@ -201,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         } else {
             hService.setDefaultFrequency();
             frequency.setText(Long.toString(hService.getCurrentFrequenct()));
-            message = "Przywrócono " + hService.getCurrentFrequenct() + " sek.";
+            message = getString(R.string.frequency_change_restore) + hService.getCurrentFrequenct() + getString(R.string.frequency_change_unit);
         }
         showDialog(message);
     }
@@ -258,23 +254,19 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        Log.d("SwitchON","Jestem !!!!!!!!!!!!!!!!!!!!");
                         hService.providerEnabled();
                         if(hService.canGetProvider()){  //if localisation is on don't go to settings(false), start gps
-                            Log.d("SwitchOFF","Mogę wziąć !!!!!!!!!!!!!!!!!!!!");
                             inSettings=false;
                             Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
                             hService.startSearchLocation();
                             isHunting = true;
                             frequency.setEnabled(false);
                         }else{
-                            Log.d("SwitchOFF","Nie mogę wziąć  !!!!!!!!!!!!!!!!!!!!");
                             inSettings=true;
 
                             showAlertSettings();
                         }
                     } else {
-                        Log.d("SwitchOFF","Jestem !!!!!!!!!!!!!!!!!!!!");
                         hService.stopSearchLocation();
                         isHunting = false;
                         frequency.setEnabled(true);

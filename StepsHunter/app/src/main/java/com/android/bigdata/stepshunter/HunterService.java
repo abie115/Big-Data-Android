@@ -1,7 +1,5 @@
 package com.android.bigdata.stepshunter;
 
-import com.android.bigdata.storagedata.InternalStorageFile;
-
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.Manifest;
@@ -52,12 +50,6 @@ public class HunterService extends Service {
     private static final long MAX_FREQUENCY = 2 * 60 * 1000; //2 minutes
     private static long CURRENT_FREQUENCY;
 
-    //dodaje do konstruktora interfej (must)!!!
-    public HunterService(Context context,IServiceCallbacks iServiceCallbacks) { //usuniete
-        this.mContext = context;
-        this.mIServiceCallbacks = iServiceCallbacks;
-    }
-
     public HunterService(){ }
 
     @Override
@@ -85,12 +77,10 @@ public class HunterService extends Service {
 //-----------------------------gps reading/connection lost-------------------------------------------
 
     public void startLocationManager(){
-        Log.d("startLocationManager","Włączone !!!!!!!!!!!!!!!!!!!!");
         locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
     }
 
     public void startSearchLocation(){
-        Log.d("startSearchLocation", "Zaczynam szukać !!!!!!!!!!!!!!!!!!!!");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -101,7 +91,6 @@ public class HunterService extends Service {
     }
 
     public void stopSearchLocation(){
-        Log.d("stopSearchLocation", "Kończę szukać !!!!!!!!!!!!!!!!!!!!");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -152,7 +141,6 @@ public class HunterService extends Service {
     private GpsStatus.Listener gpsStatus = new GpsStatus.Listener() {
         @Override
         public void onGpsStatusChanged(int event) {
-            Log.d("Testline", String.valueOf(isRange));
             if (event == GpsStatus.GPS_EVENT_SATELLITE_STATUS) {
                 if (lastLocation != null)
                     GPSFix = (SystemClock.elapsedRealtime() - lastLocationTime) < 3000;
@@ -161,9 +149,7 @@ public class HunterService extends Service {
                         hideLostGpsSignalNotification();
                     }
                     isRange=true;
-                    Log.d("Testline", "jest zasieg");
                 } else {
-                    Log.d("brak zasiegu", "jestem");
                     if(isRange==true){
                         createLostGpsSignalNotification();
                     }
@@ -175,7 +161,6 @@ public class HunterService extends Service {
                     hideLostGpsSignalNotification();
                 }
                 isRange=true;
-                Log.d("eve_firsy_fix", "jestem");
             }
         }
     };
@@ -197,7 +182,7 @@ public class HunterService extends Service {
             CURRENT_FREQUENCY = Long.parseLong(savedFrequency);
         } catch (NumberFormatException e){
             CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
-            Log.d("HunterService", "Problem z pobieraniem częstotliwości.\n Wiadomość błędu: " + e.getMessage());
+            Log.w("HunterService", getString(R.string.LOG_readFrequency) + e.getMessage());
         }
     }
 
