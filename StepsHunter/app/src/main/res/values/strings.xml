@@ -28,5 +28,4 @@
     <string name="tag_internalStorageFile">InternalStorageFile</string>
     <string name="msg_fileDeletedException">Attempt to remove a nonexistent file</string>
 
-    deleteFile
 </resources>
