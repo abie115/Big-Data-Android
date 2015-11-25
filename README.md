@@ -16,3 +16,11 @@ ___
 
 ### Minimalna wersja Androida
 4.0
+
+### Zaimplementowana funkcjonalność
+* Aplikacja działa w tle
+* odczytuje wspolrzędne gps w odstepach czasu domyślnych lub ustalonych przez użytkownika 
+* nie obsługuje zmian położenia poniżej ustalonej wielkości
+* pomaga właczyć systemowy gps (wyświetla komunikat / przekierowuje do odpowiedniego panelu)
+* komunikuje sie za pomocą notyfikacji i wiadomości toast
+* pracuje z plikami zapisanymi w pamici wewntrznej (zapis / odczyt / usunięcie / utworzenie)
