@@ -34,10 +34,10 @@ public class HunterService extends Service {
 
     private Location lastLocation;
     double lastLocationTime;
-    boolean GPSFix=false;
-    boolean isRange=false;
+    boolean GPSFix = false;
+    boolean isRange = false;
 
-    private static long MIN_DISTANCE_UPDATE=1;
+    private static long MIN_DISTANCE_UPDATE = 1;
 
     //settings
     private static final String PREFS_NAME = "HunterPrefsFile";
@@ -50,7 +50,8 @@ public class HunterService extends Service {
     private static final long MAX_FREQUENCY = 2 * 60 * 1000; //2 minutes
     private static long CURRENT_FREQUENCY;
 
-    public HunterService(){ }
+    public HunterService() {
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -58,29 +59,29 @@ public class HunterService extends Service {
     }
 
     @Override
-    public void onCreate(){
+    public void onCreate() {
         settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         readFrequency();
     }
 
     //class for binging service to clients
     public class LocalBinder extends Binder {
-        HunterService getService (){
+        HunterService getService() {
             return HunterService.this;
         }
 
     }
 
-    public void setContext(Context context){
+    public void setContext(Context context) {
         mContext = context;
     }
 //-----------------------------gps reading/connection lost-------------------------------------------
 
-    public void startLocationManager(){
+    public void startLocationManager() {
         locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
     }
 
-    public void startSearchLocation(){
+    public void startSearchLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -90,7 +91,7 @@ public class HunterService extends Service {
         locationManager.addGpsStatusListener(gpsStatus); //gps status listener
     }
 
-    public void stopSearchLocation(){
+    public void stopSearchLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
@@ -99,12 +100,8 @@ public class HunterService extends Service {
         locationManager.removeUpdates(locationListener);
     }
 
-    public void providerEnabled(){
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            canGetProvider=true;
-        } else {
-            canGetProvider=false;
-       }
+    public void providerEnabled() {
+        canGetProvider = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     public boolean canGetProvider() {
@@ -116,7 +113,7 @@ public class HunterService extends Service {
         @Override
         public void onLocationChanged(Location location) {
             //calls function showCoordinates if coordinates was changed
-            if(location != null) {
+            if (location != null) {
                 mIServiceCallbacks.showCoordinates(location);
                 lastLocationTime = SystemClock.elapsedRealtime();
                 lastLocation = location;
@@ -124,7 +121,8 @@ public class HunterService extends Service {
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {}
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
 
         @Override
         public void onProviderEnabled(String provider) {
@@ -145,22 +143,22 @@ public class HunterService extends Service {
                 if (lastLocation != null)
                     GPSFix = (SystemClock.elapsedRealtime() - lastLocationTime) < 3000;
                 if (GPSFix) {
-                    if(isRange==false){
+                    if (isRange == false) {
                         hideLostGpsSignalNotification();
                     }
-                    isRange=true;
+                    isRange = true;
                 } else {
-                    if(isRange==true){
+                    if (isRange == true) {
                         createLostGpsSignalNotification();
                     }
-                    isRange=false;
+                    isRange = false;
                 }
             } else if (event == GpsStatus.GPS_EVENT_FIRST_FIX) {
                 GPSFix = true;
-                if(isRange==false){
+                if (isRange == false) {
                     hideLostGpsSignalNotification();
                 }
-                isRange=true;
+                isRange = true;
             }
         }
     };
@@ -169,47 +167,47 @@ public class HunterService extends Service {
 //-----------------------------frequency of measuring gps -------------------------------------------
 
     //write and read settings
-    private void saveFrequency(){
+    private void saveFrequency() {
         SharedPreferences.Editor preferencesEditor = settings.edit();
         preferencesEditor.putString(FREQUENCY_PREFS, Long.toString(CURRENT_FREQUENCY));
         preferencesEditor.commit();
     }
 
-    private void readFrequency(){
+    private void readFrequency() {
         String savedFrequency = settings.getString(FREQUENCY_PREFS, "");
 
         try {
             CURRENT_FREQUENCY = Long.parseLong(savedFrequency);
-        } catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
             Log.w("HunterService", getString(R.string.LOG_readFrequency) + e.getMessage());
         }
     }
 
-    public void setCurrentFrequency(long newFrequency){
+    public void setCurrentFrequency(long newFrequency) {
         CURRENT_FREQUENCY = newFrequency * 1000;
         saveFrequency();
     }
 
-    public long getCurrentFrequenct(){
+    public long getCurrentFrequenct() {
         return CURRENT_FREQUENCY / 1000;
     }
 
     //comeback to default frequency
-    public void setDefaultFrequency(){
+    public void setDefaultFrequency() {
         CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
         saveFrequency();
     }
 
-    public long getMinFrequency(){
+    public long getMinFrequency() {
         return MIN_FREQUENCY / 1000;
     }
 
-    public long getMaxFrequency(){
+    public long getMaxFrequency() {
         return MAX_FREQUENCY / 1000;
     }
 
-    public void setServiceCallbacks(IServiceCallbacks callbacks){
+    public void setServiceCallbacks(IServiceCallbacks callbacks) {
         mIServiceCallbacks = callbacks;
     }
 
@@ -233,13 +231,12 @@ public class HunterService extends Service {
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-       
-        int mId = 1;
-        mNotificationManager.notify(mId, mBuilder.build());
+
+        mNotificationManager.notify(1, mBuilder.build());
     }
 
-    private void hideLostGpsSignalNotification(){
-        NotificationManager mNotificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    private void hideLostGpsSignalNotification() {
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.cancelAll();
     }
 }
