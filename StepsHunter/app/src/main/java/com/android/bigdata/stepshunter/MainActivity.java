@@ -28,14 +28,13 @@ import android.widget.Toast;
 import android.widget.EditText;
 
 
-
 public class MainActivity extends AppCompatActivity implements IServiceCallbacks {
 
     private EditText frequency;
 
     private HunterService hService;
     private boolean hBound = false;
-    boolean inSettings=false;
+    boolean inSettings = false;
     private IServiceCallbacks hThis = this;
     private boolean isHunting = false;
 
@@ -54,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         tvLongitude = (TextView) findViewById(R.id.tvLongitude);
         tvLog = (TextView) findViewById(R.id.tvLog);
         swGPS = (Switch) findViewById(R.id.swGPS);
-        tvLog.setText(tvLog.getText()+"\n");
+        tvLog.setText(tvLog.getText() + "\n");
 
         frequency = (EditText) findViewById(R.id.frequency_value);
 
@@ -75,15 +74,15 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     protected void onStart() {
         super.onStart();
 
-        if(hService == null)
+        if (hService == null)
             bindHunterService();
 
-       if(inSettings){ //if comeback from settings, start from onstart
+        if (inSettings) { //if comeback from settings, start from onstart
             hService.providerEnabled();
-            if(hService.canGetProvider){
+            if (hService.canGetProvider) {
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
                 hService.startSearchLocation();
-                inSettings=false;
+                inSettings = false;
                 isHunting = true;
                 frequency.setEnabled(false);
             } else {
@@ -117,23 +116,17 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     }
 
     @Override
-    public void showCoordinates(Location location){
+    public void showCoordinates(Location location) {
         tvLatitude.setText(getString(R.string.tvLatitude) + location.getLongitude());
         tvLongitude.setText(getString(R.string.tvLongitude) + location.getLatitude());
         tvLog.setText(tvLog.getText() + " " + location.getLongitude() + " " + location.getLatitude() + "\n");
 
-        //-------demonstration how class internalStorageFile works------
-        //--------------------to change after testing-------------------
         InternalStorageFile internalStorageFile = new InternalStorageFile(getApplicationContext());
         internalStorageFile.writeToGpsFile(
                 getString(R.string.tvLatitude) + location.getLongitude()
                         + " " +
                         getString(R.string.tvLongitude) + location.getLatitude()
         );
-
-        String s = internalStorageFile.readFromGpsFile();
-        //--------------------------------------------------------------------
-
     }
 
     @Override
@@ -162,14 +155,14 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     }
 
     // frequency
-    public void changeFrequency(View view){
+    public void changeFrequency(View view) {
         String message;
 
-        if(isHunting){
+        if (isHunting) {
             message = getString(R.string.frequency_change_warning);
         } else {
 
-            if(frequency.getText().toString().matches(""))
+            if (frequency.getText().toString().matches(""))
                 message = getString(R.string.frequency_change_empty_field);
             else {
                 long newFrequency = Long.parseLong(frequency.getText().toString());
@@ -189,10 +182,10 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         showDialog(message);
     }
 
-    public void setDefaultFrequency(View view){
+    public void setDefaultFrequency(View view) {
         String message;
 
-        if(isHunting){
+        if (isHunting) {
             message = getString(R.string.frequency_change_warning);
         } else {
             hService.setDefaultFrequency();
@@ -202,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         showDialog(message);
     }
 
-    private void showDialog(String message){
+    private void showDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(message)
                 .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
@@ -217,13 +210,13 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     //******************************************************
     // Service
 
-    private void bindHunterService(){
+    private void bindHunterService() {
         // service binding
         Intent intent = new Intent(this, HunterService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
-    private void unbindHunterService(){
+    private void unbindHunterService() {
         // service unbinding
         if (hBound) {
             unbindService(mConnection);
@@ -255,14 +248,14 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         hService.providerEnabled();
-                        if(hService.canGetProvider()){  //if localisation is on don't go to settings(false), start gps
-                            inSettings=false;
+                        if (hService.canGetProvider()) {  //if localisation is on don't go to settings(false), start gps
+                            inSettings = false;
                             Toast.makeText(getApplicationContext(), getString(R.string.GPSenabled), Toast.LENGTH_LONG).show();
                             hService.startSearchLocation();
                             isHunting = true;
                             frequency.setEnabled(false);
-                        }else{
-                            inSettings=true;
+                        } else {
+                            inSettings = true;
 
                             showAlertSettings();
                         }

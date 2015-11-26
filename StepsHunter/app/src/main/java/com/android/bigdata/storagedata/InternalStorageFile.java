@@ -16,14 +16,9 @@ import java.util.logging.Logger;
 
 public class InternalStorageFile {
 
-    //e.g. to delete file_with_gps use:
-    //import com.android.bigdata.storagedata.InternalStorageFile;
-    //InternalStorageFile i = new InternalStorageFile(getApplicationContext());
-    //i.cleanGpsFile(getString(R.string.file_with_gps));
-
     private static Context context;
 
-    public InternalStorageFile(Context context){
+    public InternalStorageFile(Context context) {
         this.context = context;
     }
 
@@ -32,52 +27,54 @@ public class InternalStorageFile {
         toast.show();
     }
 
-    private void logException(Exception e){
+    private void logException(Exception e) {
         Logger logger = Logger.getLogger(context.getString(R.string.tag_internalStorageFile));
         StringWriter trace = new StringWriter();
         e.printStackTrace(new PrintWriter(trace));
         logger.severe(trace.toString());
     }
 
-    public void writeToGpsFile(String text){
-        if(!writeToFile(context.getString(R.string.file_with_gps), text))
+    public void writeToGpsFile(String text) {
+        if (!writeToFile(context.getString(R.string.file_with_gps), text))
             showToast(context.getString(R.string.toast_internal_storage_error));
     }
 
-    public String readFromGpsFile(){
+    public String readFromGpsFile() {
         String fileContent = readFromFile(context.getString(R.string.file_with_gps));
-        if(null==fileContent)
+        if (null == fileContent) {
             showToast(context.getString(R.string.toast_internal_storage_error));
+            return "";
+        }
 
         return fileContent;
     }
 
-    public void cleanGpsFile(){
+    public void cleanGpsFile() {
         boolean deleted = deleteFile(context.getString(R.string.file_with_gps));
         if (!deleted)
             showToast(context.getString(R.string.toast_internal_storage_error));
     }
 
-    //true if open, write and close properly
     //creates the file if it does not exist
-    //write line by line
-    public boolean writeToFile(String filename, String text){
+    public boolean writeToFile(String filename, String text) {
         String lineSeparator = "\n";
 
-        try{
+        try {
             FileOutputStream fileOutputStream = context.openFileOutput(filename, context.MODE_APPEND);
             fileOutputStream.write(text.concat(lineSeparator).getBytes());
             fileOutputStream.close();
-        }catch(Exception e){
-            logException(e);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
 
         return true;
     }
 
-    //returns the contents of a file (also empty) in one String or null if exception;
-    public String readFromFile(String filename){
+    public String readFromFile(String filename) {
         StringBuilder stringBuilder = new StringBuilder();
         String oneLine;
 
@@ -102,7 +99,7 @@ public class InternalStorageFile {
     }
 
     //true if the file was successfully deleted or never existed
-    public boolean deleteFile(String filename){
+    public boolean deleteFile(String filename) {
         Boolean deleted = true;
 
         try {
@@ -112,7 +109,7 @@ public class InternalStorageFile {
             else
                 throw new FileNotFoundException(context.getString(R.string.msg_fileDeletedException));
 
-        }catch(FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             logException(e);
         }
 
