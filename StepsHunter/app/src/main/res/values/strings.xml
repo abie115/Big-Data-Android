@@ -12,7 +12,7 @@
     <string name="swGPS">GPS</string>
     <string name="swLocation">Szukaj lokalizacji</string>
 
-    <!-- czestotliwosc -->
+    <!-- frequency -->
     <string name="frequency_setting">Częstotliwość pomiaru: </string>
     <string name="frequency_batton_set">Ustaw</string>
     <string name="frequency_batton_default">Przywróć domyślną wartość</string>
@@ -35,4 +35,11 @@
     <string name="msg_fileDeletedException">Attempt to remove a nonexistent file</string>
 
     <string name="LOG_readFrequency">Problem z pobieraniem częstotliwości. Wiadomość błędu: </string>
+
+    <!-- Registration form -->
+    <string name="registrationActivityTitle">Strona Rejestracji</string>
+    <string name="giveUsername">Podaj login:</string>
+    <string name="givePassword">Podaj hasło:</string>
+    <string name="repeatPassword">Powtórz hasło:</string>
+    <string name="registerButton">Rejestruj</string>
 </resources>
