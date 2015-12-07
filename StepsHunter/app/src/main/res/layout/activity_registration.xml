@@ -36,6 +36,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/giveUsername" />
                 <EditText
+                    android:id="@+id/registrationLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
@@ -52,10 +53,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/givePassword" />
                 <EditText
+                    android:id="@+id/registrationPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:password="true" />
 
             </LinearLayout>
 
@@ -68,10 +71,12 @@
                     android:layout_height="wrap_content"
                     android:text="@string/repeatPassword" />
                 <EditText
+                    android:id="@+id/repeatedPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:password="true" />
 
             </LinearLayout>
 
@@ -84,6 +89,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
+                    android:onClick="registerAccount"
                     android:text="@string/registerButton" />
             </RelativeLayout>
         </LinearLayout>

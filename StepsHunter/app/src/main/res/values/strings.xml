@@ -42,4 +42,7 @@
     <string name="givePassword">Podaj hasło:</string>
     <string name="repeatPassword">Powtórz hasło:</string>
     <string name="registerButton">Rejestruj</string>
+
+    <string name="emptyField">Jedno z pól jest puste. Wypełnij wszystkie pola i spróbuj ponownie.</string>
+    <string name="passwordsNotEquals">Podane hasła są różne. Upewnij się, że hasła są takie same i spróbuj ponownie.</string>
 </resources>
