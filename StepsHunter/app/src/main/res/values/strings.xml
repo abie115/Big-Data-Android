@@ -36,6 +36,7 @@
 
     <string name="LOG_readFrequency">Problem z pobieraniem częstotliwości. Wiadomość błędu: </string>
 
+
     <!-- Registration form -->
     <string name="registrationActivityTitle">Strona Rejestracji</string>
     <string name="giveUsername">Podaj login:</string>
@@ -45,4 +46,12 @@
 
     <string name="emptyField">Jedno z pól jest puste. Wypełnij wszystkie pola i spróbuj ponownie.</string>
     <string name="passwordsNotEquals">Podane hasła są różne. Upewnij się, że hasła są takie same i spróbuj ponownie.</string>
+
+    <string name="registrationFailureTitle">Niepowodzenie rejestracji!</string>
+    <string name="registrationErrors">Podczas rejestracji wystąpiły pewne błędy.</string>
+    <string name="backToLoginActivity">Wróć do strony logowania</string>
+
+    <string name="registrationSuccessTitle">Pomyślnie zarejestrowano!</string>
+    <string name="registrationSuccessMessage">Rejestracja przebiegła pomyślnie. Zostałes/aś zalogowany/a. Kliknij przycisk apy przejść do widoku aplikacji.</string>
+    <string name="goToApplication">Przejdź do aplikacji</string>
 </resources>
