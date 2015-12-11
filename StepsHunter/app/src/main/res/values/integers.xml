@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="przyklad">333</integer>
+    <integer name="splash_screen_pause">1000</integer>
 </resources>
-
-<!-- przyklad uzycia
-In Java: R.integer.integer_name
-In XML: @[package:]integer/integer_name
--->
