@@ -3,6 +3,7 @@
     package="com.android.bigdata.stepshunter" >
 
     <application
+        android:name="com.android.bigdata.databaseconnection.ParseConnection"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -28,10 +29,10 @@
 
         <meta-data
             android:name="com.parse.APPLICATION_ID"
-            android:value="9eXH4jPc71LFs9Ig8fcBiFlDUmtMqfITBAJ3ruq3" />
+            android:value="ono9MPjqlQH9tnfBwQdk9B6ct7rHzo4HCLHe6ofA" />
         <meta-data
             android:name="com.parse.CLIENT_KEY"
-            android:value="dfDPo4WGydtcUrMLeuRfl6QoiILcdIdb1GsWPnR6" />
+            android:value="YnqfsOy9J2Ci5cRZg6hBP1efcMYwc5KGvqi9KvPk" />
 
     </application>
 

@@ -21,7 +21,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.parse.ParseObject;
 
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -70,13 +69,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                         .setAction("Action", null).show();
             }
         });
-        
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this);
 
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("testCol", "testData");
-        testObject.saveInBackground();
     }
 
     @Override
