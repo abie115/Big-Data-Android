@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.android.bigdata.helper.ShowMessage;
+
 public class RegistrationActivity extends AppCompatActivity {
 
     @Override
