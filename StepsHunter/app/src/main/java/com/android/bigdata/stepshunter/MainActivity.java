@@ -1,5 +1,6 @@
 package com.android.bigdata.stepshunter;
 
+import com.android.bigdata.helper.ShowMessage;
 import com.android.bigdata.storagedata.InternalStorageFile;
 import com.parse.Parse;
 
@@ -175,13 +176,13 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                     message = getString(R.string.frequency_change_to_high);
                 else {
                     hService.setCurrentFrequency(newFrequency);
-                    message = getString(R.string.frequency_change_changed_to) + hService.getCurrentFrequenct() + getString(R.string.frequency_change_unit);
+                    message = getString(R.string.frequency_change_changed_to) + " " + hService.getCurrentFrequenct() + " " + getString(R.string.frequency_change_unit);
                 }
             }
 
         }
 
-        showDialog(message);
+        ShowMessage.showOkDialog(message, this);
     }
 
     public void setDefaultFrequency(View view) {
@@ -192,20 +193,9 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
         } else {
             hService.setDefaultFrequency();
             frequency.setText(Long.toString(hService.getCurrentFrequenct()));
-            message = getString(R.string.frequency_change_restore) + hService.getCurrentFrequenct() + getString(R.string.frequency_change_unit);
+            message = getString(R.string.frequency_change_restore) + " " + hService.getCurrentFrequenct() + " " + getString(R.string.frequency_change_unit);
         }
-        showDialog(message);
-    }
-
-    private void showDialog(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(message)
-                .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-        builder.show();
+        ShowMessage.showOkDialog(message, this);
     }
 
 
