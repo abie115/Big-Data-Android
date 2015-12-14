@@ -1,6 +1,7 @@
 package com.android.bigdata.stepshunter;
 
 import com.android.bigdata.storagedata.InternalStorageFile;
+import com.parse.Parse;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                         .setAction("Action", null).show();
             }
         });
+
     }
 
     @Override

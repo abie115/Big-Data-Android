@@ -5,6 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.android.bigdata.databaseconnection.ParseConnection;
+import com.android.bigdata.helper.ShowMessage;
+import com.parse.ParseUser;
+
 public class RegistrationSuccessActivity extends AppCompatActivity {
 
     @Override
@@ -14,7 +18,13 @@ public class RegistrationSuccessActivity extends AppCompatActivity {
     }
 
     public void goToApplication(View view){
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user == null)
+            ShowMessage.showOkDialog("Nie można wykonać operacji - nie jesteś zalogowany/a.",this);
+        else {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
     }
+
 }

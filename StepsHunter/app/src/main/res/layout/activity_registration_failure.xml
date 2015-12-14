@@ -36,6 +36,11 @@
             android:layout_height="wrap_content"
             android:text="@string/registrationErrors" />
 
+        <TextView
+            android:id="@+id/registration_failure_show_error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -47,7 +52,8 @@
                 android:text="@string/backToLoginActivity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                android:layout_centerInParent="true"
+                android:onClick="backToLoginPage" />
         </RelativeLayout>
 
     </LinearLayout>

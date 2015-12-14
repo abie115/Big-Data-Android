@@ -1,10 +1,12 @@
 package com.android.bigdata.stepshunter;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import com.android.bigdata.databaseconnection.ParseConnection;
 import com.android.bigdata.helper.ShowMessage;
 
 public class RegistrationActivity extends AppCompatActivity {
@@ -31,7 +33,10 @@ public class RegistrationActivity extends AppCompatActivity {
                 ShowMessage.showOkDialog(getString(R.string.passwordsNotEquals), this);
 
             else {
-                ShowMessage.showOkDialog("Wszystko wstępnie OK", this); //wydruk kontrolny
+                //Intent intent = new Intent(this, RegistrationFailureActiviry.class);
+                //startActivity(intent);
+                ParseConnection.register(login.getText().toString(),password.getText().toString(),this);
+                //ShowMessage.showOkDialog("Wszystko wstępnie OK | "+login.getText().toString(), this); //wydruk kontrolny
             }
         }
 
