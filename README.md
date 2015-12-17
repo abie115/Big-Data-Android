@@ -24,3 +24,5 @@ ___
 * pomaga właczyć systemowy gps (wyświetla komunikat / przekierowuje do odpowiedniego panelu)
 * komunikuje sie za pomocą notyfikacji i wiadomości toast
 * pracuje z plikami zapisanymi w pamici wewntrznej (zapis / odczyt / usunięcie / utworzenie)
+* posiada ekran powitalny
+* wykorzystuje niestandardowy preloader
