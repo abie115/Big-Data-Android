@@ -10,7 +10,10 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
+import com.android.bigdata.helper.Preloader;
+
 public class SplashScreen extends Activity {
+private Preloader preloader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +27,7 @@ public class SplashScreen extends Activity {
             @Override
             public void run() {
                 startMainActivity();
-                stopPreloaderAnimation();
-                hidePreloaderAnimation();
+                hidePreloader();
                 finish();
             }
         }, resources.getInteger(R.integer.splash_screen_pause));
@@ -37,21 +39,17 @@ public class SplashScreen extends Activity {
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if (hasFocus) startPreloaderAnimation();
+    public void onWindowFocusChanged(boolean hasFocus){
+        if (hasFocus) showPreloader();
     }
 
-    public void startPreloaderAnimation() {
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.animation_rotation);
-        findViewById(R.id.preloaderCircular).startAnimation(animation);
+    private void showPreloader(){
+        preloader = new Preloader(this);
+        preloader.showPreloader();
     }
 
-    public void stopPreloaderAnimation() {
-        findViewById(R.id.preloaderCircular).clearAnimation();
-    }
-
-    public void hidePreloaderAnimation() {
-        ImageView imageView = (ImageView) findViewById(R.id.preloaderCircular);
-        imageView.setVisibility(View.INVISIBLE);
+    private void hidePreloader(){
+        if(preloader!=null)preloader.hidePreloader();
     }
 }
+
