@@ -1,4 +1,4 @@
-# Projekt Zespołowy
+﻿# Projekt Zespołowy
 # Aplikacja StepsHunter
 
 ___
@@ -26,3 +26,5 @@ ___
 * pracuje z plikami zapisanymi w pamici wewntrznej (zapis / odczyt / usunięcie / utworzenie)
 * polaczenie z baza parse.com
 * rejestracja uzytkownikow
+* posiada ekran powitalny
+* wykorzystuje niestandardowy preloader
