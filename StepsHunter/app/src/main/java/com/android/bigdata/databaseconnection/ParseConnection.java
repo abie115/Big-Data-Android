@@ -25,16 +25,8 @@ public class ParseConnection extends Application {
     public void onCreate() {
         super.onCreate();
         Parse.enableLocalDatastore(this);
-        // Initialization
         Parse.initialize(this);
 
-        //ParseObject testObject = new ParseObject("TestObject");
-        //testObject.put("testCol", "testData");
-
-            //testObject.saveInBackground();
-        //If the user is offline, the object will be stored on the device until a new connection has been established.
-        //If the app is closed before the connection is back, Parse will try to save it again the next time the app is opened.
-            //testObject.saveEventually();
     }
 
     public static void register(String username, String password, final Context context){

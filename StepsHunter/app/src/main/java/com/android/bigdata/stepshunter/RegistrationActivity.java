@@ -33,10 +33,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 ShowMessage.showOkDialog(getString(R.string.passwordsNotEquals), this);
 
             else {
-                //Intent intent = new Intent(this, RegistrationFailureActiviry.class);
-                //startActivity(intent);
                 ParseConnection.register(login.getText().toString(),password.getText().toString(),this);
-                //ShowMessage.showOkDialog("Wszystko wstępnie OK | "+login.getText().toString(), this); //wydruk kontrolny
+
             }
         }
 
