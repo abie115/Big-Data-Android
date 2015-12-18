@@ -5,10 +5,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
 import com.android.bigdata.helper.Preloader;
 
@@ -26,15 +22,15 @@ private Preloader preloader;
 
             @Override
             public void run() {
-                startMainActivity();
+                startRegistrationActivity();
                 hidePreloader();
                 finish();
             }
         }, resources.getInteger(R.integer.splash_screen_pause));
     }
 
-    private void startMainActivity() {
-        Intent intent = new Intent(SplashScreen.this, MainActivity.class);
+    private void startRegistrationActivity() {
+        Intent intent = new Intent(SplashScreen.this, RegistrationActivity.class);
         startActivity(intent);
     }
 
