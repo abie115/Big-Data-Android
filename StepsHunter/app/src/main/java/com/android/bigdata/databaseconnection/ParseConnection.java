@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.android.bigdata.helper.ShowMessage;
+import com.android.bigdata.stepshunter.LoginFailureActivity;
+import com.android.bigdata.stepshunter.LoginSuccessActivity;
 import com.android.bigdata.stepshunter.MainActivity;
 import com.android.bigdata.stepshunter.RegistrationFailureActiviry;
 import com.android.bigdata.stepshunter.RegistrationSuccessActivity;
@@ -62,10 +64,12 @@ public class ParseConnection extends Application {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
                 if(parseUser != null){
-                    Intent intent = new Intent(context, MainActivity.class);
+                    Intent intent = new Intent(context, LoginSuccessActivity.class);
                     context.startActivity(intent);
                 } else {
-                    ShowMessage.showOkDialog("Logowanie się nie powiodło", context);
+                    Intent intent = new Intent(context, LoginFailureActivity.class);
+                    intent.putExtra(ERROR_MESSAGE, e.getMessage());
+                    context.startActivity(intent);
                 }
             }
         });

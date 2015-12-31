@@ -29,7 +29,7 @@ public class SplashScreen extends Activity {
 
                 @Override
                 public void run() {
-                    startRegistrationActivity();
+                    startLoginActivity();
                     hidePreloader();
                     finish();
                 }
@@ -46,8 +46,8 @@ public class SplashScreen extends Activity {
             }, resources.getInteger(R.integer.splash_screen_pause));
     }
 
-    private void startRegistrationActivity() {
-        Intent intent = new Intent(SplashScreen.this, RegistrationActivity.class);
+    private void startLoginActivity() {
+        Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
         startActivity(intent);
     }
 
