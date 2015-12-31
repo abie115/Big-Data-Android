@@ -7,9 +7,14 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.android.bigdata.helper.Preloader;
+import com.android.bigdata.storagedata.SettingsStorage;
 
 public class SplashScreen extends Activity {
-private Preloader preloader;
+
+    private Preloader preloader;
+
+    //settings
+    private static final String USERNAME_PREFS = "username";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,19 +23,37 @@ private Preloader preloader;
 
         Resources resources = getResources();
 
-        new Handler().postDelayed(new Runnable() {
+        String username = SettingsStorage.getSettings(USERNAME_PREFS, this);
 
-            @Override
-            public void run() {
-                startRegistrationActivity();
-                hidePreloader();
-                finish();
-            }
-        }, resources.getInteger(R.integer.splash_screen_pause));
+        if(username.matches(""))
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    startRegistrationActivity();
+                    hidePreloader();
+                    finish();
+                }
+            }, resources.getInteger(R.integer.splash_screen_pause));
+        else
+            new Handler().postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    startMainActivity();
+                    hidePreloader();
+                    finish();
+                }
+            }, resources.getInteger(R.integer.splash_screen_pause));
     }
 
     private void startRegistrationActivity() {
         Intent intent = new Intent(SplashScreen.this, RegistrationActivity.class);
+        startActivity(intent);
+    }
+
+    private void startMainActivity() {
+        Intent intent = new Intent(SplashScreen.this, MainActivity.class);
         startActivity(intent);
     }
 

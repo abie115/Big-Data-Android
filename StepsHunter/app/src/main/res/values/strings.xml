@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">StepsHunter</string>
-    <string name="action_settings">Ustawienia</string>
+    <string name="action_logout">Wyloguj</string>
+
     <string name="tvLatitude">Szerokość geograficzna: </string>
     <string name="tvLongitude">Długość geograficzna: </string>
     <string name="tvLog">Logi:</string>
@@ -35,11 +36,13 @@
     <string name="msg_fileDeletedException">Attempt to remove a nonexistent file</string>
 
     <string name="LOG_readFrequency">Problem z pobieraniem częstotliwości. Wiadomość błędu: </string>
+    <string name="ERROR_readFrequency">Problem z pobieraniem częstotliwości. Wiadomość błędu w logach. </string>
 
 
     <!-- Registration form -->
     <string name="registrationActivityTitle">Strona Rejestracji</string>
     <string name="giveUsername">Podaj login:</string>
+    <string name="giveEmail">Podaj email:</string>
     <string name="givePassword">Podaj hasło:</string>
     <string name="repeatPassword">Powtórz hasło:</string>
     <string name="registerButton">Rejestruj</string>
@@ -48,7 +51,7 @@
     <string name="passwordsNotEquals">Podane hasła są różne. Upewnij się, że hasła są takie same i spróbuj ponownie.</string>
 
     <string name="registrationFailureTitle">Niepowodzenie rejestracji!</string>
-    <string name="registrationErrors">Podczas rejestracji wystąpiły pewne błędy.</string>
+    <string name="registrationErrors">Podczas rejestracji wystąpiły pewne błędy:</string>
     <string name="backToLoginActivity">Wróć do strony logowania</string>
 
     <string name="registrationSuccessTitle">Pomyślnie zarejestrowano!</string>

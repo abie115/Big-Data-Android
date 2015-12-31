@@ -21,6 +21,9 @@ import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.NotificationCompat;
 import android.os.SystemClock;
 
+import com.android.bigdata.helper.ShowMessage;
+import com.android.bigdata.storagedata.SettingsStorage;
+
 
 public class HunterService extends Service {
 
@@ -40,9 +43,7 @@ public class HunterService extends Service {
     private static long MIN_DISTANCE_UPDATE = 1;
 
     //settings
-    private static final String PREFS_NAME = "HunterPrefsFile";
     private static final String FREQUENCY_PREFS = "frequency";
-    private SharedPreferences settings;
 
     //time in milliseconds
     private static final long DEFAULT_FREQUENCY = 30 * 1000;
@@ -60,7 +61,6 @@ public class HunterService extends Service {
 
     @Override
     public void onCreate() {
-        settings = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         readFrequency();
     }
 
@@ -168,19 +168,23 @@ public class HunterService extends Service {
 
     //write and read settings
     private void saveFrequency() {
-        SharedPreferences.Editor preferencesEditor = settings.edit();
-        preferencesEditor.putString(FREQUENCY_PREFS, Long.toString(CURRENT_FREQUENCY));
-        preferencesEditor.commit();
+        try {
+            SettingsStorage.saveSettings(FREQUENCY_PREFS, Long.toString(CURRENT_FREQUENCY), this);
+        } catch (NumberFormatException e) {
+            ShowMessage.showOkDialog(getString(R.string.ERROR_readFrequency), this);
+            Log.w("HunterService | saveFr", getString(R.string.LOG_readFrequency) + e.getMessage());
+        }
     }
 
     private void readFrequency() {
-        String savedFrequency = settings.getString(FREQUENCY_PREFS, "");
+        String savedFrequency = SettingsStorage.getSettings(FREQUENCY_PREFS, this);
 
         try {
             CURRENT_FREQUENCY = Long.parseLong(savedFrequency);
         } catch (NumberFormatException e) {
             CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
-            Log.w("HunterService", getString(R.string.LOG_readFrequency) + e.getMessage());
+            ShowMessage.showOkDialog(getString(R.string.ERROR_readFrequency), this);
+            Log.w("HunterService | readFr", getString(R.string.LOG_readFrequency) + e.getMessage());
         }
     }
 

@@ -4,12 +4,14 @@ package com.android.bigdata.databaseconnection;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.android.bigdata.helper.ShowMessage;
 import com.android.bigdata.stepshunter.MainActivity;
 import com.android.bigdata.stepshunter.RegistrationFailureActiviry;
 import com.android.bigdata.stepshunter.RegistrationSuccessActivity;
+import com.android.bigdata.storagedata.SettingsStorage;
 import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
@@ -21,6 +23,9 @@ public class ParseConnection extends Application {
 
     public final static String ERROR_MESSAGE = "com.android.bigdata.databaseconnection.ERROR_MESSAGE";
 
+    //settings
+    private static final String USERNAME_PREFS = "username";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -29,16 +34,21 @@ public class ParseConnection extends Application {
 
     }
 
-    public static void register(String username, String password, final Context context){
+    public static void register(final String username, String email, String password, final Context context){
         ParseUser user = new ParseUser();
 
         user.setUsername(username);
         user.setPassword(password);
+        user.setEmail(email);
 
         user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
                 if(e == null){
+                    //save login in preferences
+                    SettingsStorage.saveSettings(USERNAME_PREFS, username, context);
+
+                    //go to successful registration page
                     Intent intent = new Intent(context, RegistrationSuccessActivity.class);
                     context.startActivity(intent);
                 } else {
@@ -62,5 +72,10 @@ public class ParseConnection extends Application {
                 }
             }
         });
+    }
+
+    public static void logout(Context context){
+        SettingsStorage.removeSettings(USERNAME_PREFS, context);
+        ParseUser.logOut();
     }
 }

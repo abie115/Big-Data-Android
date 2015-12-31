@@ -21,10 +21,11 @@ public class RegistrationActivity extends AppCompatActivity {
         EditText login = (EditText) findViewById(R.id.registrationLogin);
         EditText password = (EditText) findViewById(R.id.registrationPassword);
         EditText repeatedPassword = (EditText) findViewById(R.id.repeatedPassword);
+        EditText email = (EditText) findViewById(R.id.registrationEmail);
 
         //if one fild is empty show error message
         if(login.getText().toString().matches("") || password.getText().toString().matches("")
-                || repeatedPassword.getText().toString().matches(""))
+                || repeatedPassword.getText().toString().matches("") || email.getText().toString().matches(""))
             ShowMessage.showOkDialog(getString(R.string.emptyField), this);
 
         else {
@@ -33,7 +34,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 ShowMessage.showOkDialog(getString(R.string.passwordsNotEquals), this);
 
             else {
-                ParseConnection.register(login.getText().toString(),password.getText().toString(),this);
+                ParseConnection.register(login.getText().toString(), email.getText().toString(), password.getText().toString(), this);
 
             }
         }

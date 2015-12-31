@@ -1,5 +1,6 @@
 package com.android.bigdata.stepshunter;
 
+import com.android.bigdata.databaseconnection.ParseConnection;
 import com.android.bigdata.helper.ShowMessage;
 import com.android.bigdata.storagedata.InternalStorageFile;
 import com.parse.Parse;
@@ -112,7 +113,12 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            ParseConnection.logout(this);
+
+            //go to registration page
+            Intent intent = new Intent(this, RegistrationActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
