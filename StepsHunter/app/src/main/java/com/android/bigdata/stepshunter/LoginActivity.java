@@ -25,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void login(View view){
         EditText login = (EditText) findViewById(R.id.loginUsername);
-        EditText password = (EditText) findViewById(R.id.registrationPassword);
+        EditText password = (EditText) findViewById(R.id.loginPassword);
 
         //if one fild is empty show error message
         if(login.getText().toString().matches("") || password.getText().toString().matches(""))

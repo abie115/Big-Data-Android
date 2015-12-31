@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
             ParseConnection.logout();
 
             //go to registration page
-            Intent intent = new Intent(this, RegistrationActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             return true;
         }
