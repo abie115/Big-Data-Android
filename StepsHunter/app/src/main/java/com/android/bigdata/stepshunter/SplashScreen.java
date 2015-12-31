@@ -8,6 +8,7 @@ import android.os.Handler;
 
 import com.android.bigdata.helper.Preloader;
 import com.android.bigdata.storagedata.SettingsStorage;
+import com.parse.ParseUser;
 
 public class SplashScreen extends Activity {
 
@@ -23,9 +24,7 @@ public class SplashScreen extends Activity {
 
         Resources resources = getResources();
 
-        String username = SettingsStorage.getSettings(USERNAME_PREFS, this);
-
-        if(username.matches(""))
+        if(ParseUser.getCurrentUser() == null)
             new Handler().postDelayed(new Runnable() {
 
                 @Override

@@ -113,14 +113,16 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
         if (id == R.id.action_logout) {
-            ParseConnection.logout(this);
+            ParseConnection.logout();
 
             //go to registration page
             Intent intent = new Intent(this, RegistrationActivity.class);
             startActivity(intent);
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 

@@ -45,9 +45,6 @@ public class ParseConnection extends Application {
             @Override
             public void done(ParseException e) {
                 if(e == null){
-                    //save login in preferences
-                    SettingsStorage.saveSettings(USERNAME_PREFS, username, context);
-
                     //go to successful registration page
                     Intent intent = new Intent(context, RegistrationSuccessActivity.class);
                     context.startActivity(intent);
@@ -74,8 +71,7 @@ public class ParseConnection extends Application {
         });
     }
 
-    public static void logout(Context context){
-        SettingsStorage.removeSettings(USERNAME_PREFS, context);
+    public static void logout(){
         ParseUser.logOut();
     }
 }
