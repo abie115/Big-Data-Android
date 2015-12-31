@@ -46,7 +46,7 @@ public class ParseConnection extends Application {
         user.signUpInBackground(new SignUpCallback() {
             @Override
             public void done(ParseException e) {
-                if(e == null){
+                if (e == null) {
                     //go to successful registration page
                     Intent intent = new Intent(context, RegistrationSuccessActivity.class);
                     context.startActivity(intent);
@@ -63,7 +63,7 @@ public class ParseConnection extends Application {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
             @Override
             public void done(ParseUser parseUser, ParseException e) {
-                if(parseUser != null){
+                if (parseUser != null) {
                     Intent intent = new Intent(context, LoginSuccessActivity.class);
                     context.startActivity(intent);
                 } else {
@@ -77,5 +77,10 @@ public class ParseConnection extends Application {
 
     public static void logout(){
         ParseUser.logOut();
+    }
+
+    //or simply use comand from return
+    public static ParseUser getCurrentUser(){
+        return ParseUser.getCurrentUser();
     }
 }

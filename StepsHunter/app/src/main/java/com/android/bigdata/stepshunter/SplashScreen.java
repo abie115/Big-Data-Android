@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 
+import com.android.bigdata.databaseconnection.ParseConnection;
 import com.android.bigdata.helper.Preloader;
 import com.android.bigdata.storagedata.SettingsStorage;
 import com.parse.ParseUser;
@@ -24,7 +25,7 @@ public class SplashScreen extends Activity {
 
         Resources resources = getResources();
 
-        if(ParseUser.getCurrentUser() == null)
+        if(ParseConnection.getCurrentUser() == null)
             new Handler().postDelayed(new Runnable() {
 
                 @Override
