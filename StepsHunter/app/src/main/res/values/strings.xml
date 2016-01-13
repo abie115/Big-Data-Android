@@ -32,6 +32,7 @@
 
     <!-- Internal storage -->
     <string name="toast_internal_storage_error">Wystąpił nieoczekiwany problem z pamięcią. Jeśli komunikat powtórzy się, zainstaluj aplikację ponownie</string>
+    <string name="json_coordinates_title">data</string>
 
     <!-- Log messages -->
     <string name="tag_internalStorageFile">InternalStorageFile</string>
@@ -73,4 +74,5 @@
 
     <!-- Preloader -->
     <string name="preloaderContentDescription">Loading...</string>
+
 </resources>

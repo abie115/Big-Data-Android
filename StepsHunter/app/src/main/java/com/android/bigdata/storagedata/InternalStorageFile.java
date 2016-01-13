@@ -1,9 +1,15 @@
 package com.android.bigdata.storagedata;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.android.bigdata.stepshunter.R;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -34,20 +40,65 @@ public class InternalStorageFile {
         logger.severe(trace.toString());
     }
 
-    public void writeToGpsFile(String text) {
+    public void writeJsonToGpsFile(CoordinatesJavaBean coordinatesJavaBean) {
+        Gson gson = new Gson();
+        String text = gson.toJson(coordinatesJavaBean);
+
         if (!writeToFile(context.getString(R.string.file_with_gps), text))
             showToast(context.getString(R.string.toast_internal_storage_error));
+
     }
 
-    public String readFromGpsFile() {
-        String fileContent = readFromFile(context.getString(R.string.file_with_gps));
-        if (null == fileContent) {
-            showToast(context.getString(R.string.toast_internal_storage_error));
-            return "";
+    public JSONObject readJsonFromGpsFile() {
+        String oneLine;
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject;
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(context.openFileInput(context.getString(R.string.file_with_gps))));
+
+            while ((oneLine = bufferedReader.readLine()) != null) {
+                jsonObject = newJsonObject(oneLine);
+                jsonArray.put(jsonObject);
+            }
+
+            bufferedReader.close();
+
+        } catch (FileNotFoundException e) {
+            logException(e);
+            return null;
+        } catch (IOException e) {
+            logException(e);
+            return null;
         }
 
-        return fileContent;
+        return newJsonObject(context.getString(R.string.json_coordinates_title), jsonArray);
     }
+
+
+    public JSONObject newJsonObject(String oneLine) {
+
+        try {
+            return new JSONObject(oneLine);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public JSONObject newJsonObject(String name, JSONArray jsonArray) {
+
+        try {
+            return new JSONObject().put(name, jsonArray);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
     public void cleanGpsFile() {
         boolean deleted = deleteFile(context.getString(R.string.file_with_gps));
