@@ -75,4 +75,7 @@
     <!-- Preloader -->
     <string name="preloaderContentDescription">Loading...</string>
 
+    <!-- Server connection -->
+    <string name="server_url">url</string>
+
 </resources>

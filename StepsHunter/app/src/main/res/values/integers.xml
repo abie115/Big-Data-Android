@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="splash_screen_pause">3000</integer>
+
+    <!-- Server connection -->
+    <string name="server_port">3000</string>
+    <string name="server_connection_attempt">3</string>
+    <string name="internet_connection_attempt">3</string>
+
 </resources>
