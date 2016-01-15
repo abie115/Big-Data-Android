@@ -1,10 +1,12 @@
 package com.android.bigdata.databaseconnection;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
 import android.util.Log;
 
 import com.android.bigdata.stepshunter.R;
@@ -19,25 +21,62 @@ import java.net.URL;
 
 public class ServerConnection extends Application {
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
+    Context context;
 
-        Handler handler = new Handler();
-
-        new Thread(new Runnable() {
-            public void run() {
-                sentPost();
-            }
-        }).start();
-
+    public ServerConnection(Context context){
+        this.context = context;
     }
 
+    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (isOnline()) {
+                Log.d("Test", "isOnline");
+                //threadSentPost();
+                context.unregisterReceiver(this);
+            }
+        }
+    };
+
+    public void turnOnSendingCoordinates(){
+        new Thread(){
+            @Override
+            public void run() {
+                IntentFilter intentFilter = new IntentFilter();
+                intentFilter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+                intentFilter.addAction("android.net.wifi.STATE_CHANGE");
+
+                try {
+
+                    while(true) {
+                        context.registerReceiver(broadcastReceiver, intentFilter);
+                        sleep(context.getResources().getInteger(R.integer.frequency_of_sending_coordinates));
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+    //try {context.unregisterReceiver(broadcastReceiver);}
+    // catch(IllegalArgumentException e) {Log.d("Test", "nie wlaczony" + e.getMessage());}
+
     public boolean isOnline() {
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
+
+    public void threadSentPost(){
+            new Thread() {
+                @Override
+                public void run() {
+                   sentPost();
+                }
+            }.start();
+        }
 
     public void sentPost() {
 
@@ -73,4 +112,6 @@ public class ServerConnection extends Application {
             e.printStackTrace();
         }
     }
+
 }
+

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="splash_screen_pause">3000</integer>
+    <integer name="splash_screen_pause">10000</integer>
 
     <!-- Server connection -->
-    <string name="server_port">3000</string>
-    <string name="server_connection_attempt">3</string>
-    <string name="internet_connection_attempt">3</string>
+    <integer name="server_port">3000</integer>
+    <integer name="server_connection_attempt">3</integer>
+
+    <integer name="frequency_of_sending_coordinates">3600000</integer>
 
 </resources>
