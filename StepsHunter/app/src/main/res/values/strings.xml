@@ -72,10 +72,12 @@
     <string name="loginFailureTitle">Niepowodzenie logowania!</string>
     <string name="loginErrors">Podczas logowania wystąpiły pewne błędy:</string>
 
+    <string name="shared_preferences_user_id">userId</string>
+
     <!-- Preloader -->
     <string name="preloaderContentDescription">Loading...</string>
 
     <!-- Server connection -->
-    <string name="server_url">url</string>
+    <string name="server_url">http://test:test123@dziablo.ddns.net:3000/api/coordinates</string>
 
 </resources>
