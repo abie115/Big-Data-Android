@@ -78,6 +78,10 @@
     <string name="preloaderContentDescription">Loading...</string>
 
     <!-- Server connection -->
-    <string name="server_url">http://test:test123@dziablo.ddns.net:3000/api/coordinates</string>
+    <string name="server_protocol">http</string>
+    <string name="server_path">/api/coordinates</string>
+    <string name="server_user_login">test</string>
+    <string name="server_user_password">test123</string>
+    <string name="server_host">dziablo.ddns.net</string>
 
 </resources>
