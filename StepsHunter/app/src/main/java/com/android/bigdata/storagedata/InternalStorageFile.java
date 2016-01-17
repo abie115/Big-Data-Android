@@ -52,15 +52,13 @@ public class InternalStorageFile {
     public JSONObject readJsonFromGpsFile() {
         String oneLine;
         JSONArray jsonArray = new JSONArray();
-        JSONObject jsonObject;
 
         try {
             BufferedReader bufferedReader = new BufferedReader(
                     new InputStreamReader(context.openFileInput(context.getString(R.string.file_with_gps))));
 
             while ((oneLine = bufferedReader.readLine()) != null) {
-                jsonObject = newJsonObject(oneLine);
-                jsonArray.put(jsonObject);
+                jsonArray.put(newJsonObject(oneLine));
             }
 
             bufferedReader.close();
@@ -100,10 +98,14 @@ public class InternalStorageFile {
     }
 
 
-    public void cleanGpsFile() {
-        boolean deleted = deleteFile(context.getString(R.string.file_with_gps));
-        if (!deleted)
+    public void deleteGpsFile() {
+        try {
+            if (ifGpsFileExist())
+                deleteFile(context.getString(R.string.file_with_gps));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
             showToast(context.getString(R.string.toast_internal_storage_error));
+        }
     }
 
     //creates the file if it does not exist
@@ -149,22 +151,19 @@ public class InternalStorageFile {
         return stringBuilder.toString();
     }
 
-    //true if the file was successfully deleted or never existed
-    public boolean deleteFile(String filename) {
-        Boolean deleted = true;
+    public void deleteFile(String filename) throws FileNotFoundException {
+        if (ifFileExist(filename))
+            context.deleteFile(filename);
+        else
+            throw new FileNotFoundException(context.getString(R.string.msg_fileDeletedException));
+    }
 
-        try {
+    public boolean ifFileExist(String filename) {
+        return context.getFileStreamPath(filename).exists();
+    }
 
-            if (context.getFileStreamPath(filename).exists())
-                deleted = context.deleteFile(filename);
-            else
-                throw new FileNotFoundException(context.getString(R.string.msg_fileDeletedException));
-
-        } catch (FileNotFoundException e) {
-            logException(e);
-        }
-
-        return deleted;
+    public boolean ifGpsFileExist() {
+        return ifFileExist(context.getString(R.string.file_with_gps));
     }
 
 }
