@@ -8,18 +8,17 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Base64;
-import android.util.Log;
 
 import com.android.bigdata.stepshunter.R;
 import com.android.bigdata.storagedata.InternalStorageFile;
+import com.android.bigdata.storagedata.SettingsStorage;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
+
 import java.net.URL;
 
 public class ServerConnection extends Application {
@@ -34,7 +33,6 @@ public class ServerConnection extends Application {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (isOnline()) {
-                Log.d("Test", "isOnline");
                 threadSentPost();
                 context.unregisterReceiver(this);
             }
@@ -63,9 +61,6 @@ public class ServerConnection extends Application {
         }.start();
     }
 
-    //try {context.unregisterReceiver(broadcastReceiver);}
-    // catch(IllegalArgumentException e) {Log.d("Test", "nie wlaczony" + e.getMessage());}
-
     public boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -82,47 +77,44 @@ public class ServerConnection extends Application {
     }
 
     public void sentPost() {
+        String data = prepareDataToSent();
+        if (data == null) {
+            return;
+        }
+
         try {
-            Log.d("Test", "start");
-
-            URL url = prepareServerUrl();
-            HttpURLConnection connection = prepareHttpUrlConnection(url);
-            String data = prepareDataToSent();
+            HttpURLConnection connection = prepareHttpUrlConnection(prepareServerUrl());
             sentDataToServer(data, connection);
-
-            //<string name="server_url">http://test:test123@dziablo.ddns.net:3000/api/coordinates</string>
-            Log.d("Test", "server response " + connection.getResponseCode());
-            Log.d("Test", "server header " + connection.getHeaderFields().toString());
-            Log.d("Test", "server url " + url);
-            Log.d("Test", "server data " + data);
-
+            deleteGpsFileIfResponseOk(connection.getResponseCode());
             closeConnection(connection);
-
-        } catch (MalformedURLException eURL) {
-            eURL.printStackTrace();
-            log(eURL);
-        } catch (IOException eIO) {
-            eIO.printStackTrace();
-            log(eIO);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private void log(IOException e){
-        StringWriter trace = new StringWriter();
-        e.printStackTrace(new PrintWriter(trace));
-        Log.d("Test", trace.toString());
+    private void deleteGpsFileIfResponseOk(Integer responseCode) {
+        if (responseCode == HttpURLConnection.HTTP_OK)
+            new InternalStorageFile(context).deleteGpsFile();
     }
 
     private URL prepareServerUrl() throws MalformedURLException {
+        String server_path = context.getString(R.string.server_path) + "/:" +
+                new SettingsStorage().getSettings(context.getString(R.string.shared_preferences_user_id), context);
         return new URL(
                 context.getString(R.string.server_protocol),
                 context.getString(R.string.server_host),
                 context.getResources().getInteger(R.integer.server_port),
-                context.getString(R.string.server_path));
+                server_path
+        );
     }
 
     private String prepareDataToSent() {
-        return new InternalStorageFile(context).readJsonFromGpsFile().toString();
+        if (new InternalStorageFile(context).ifGpsFileExist())
+            return new InternalStorageFile(context).readJsonFromGpsFile().toString();
+        else
+            return null;
     }
 
     private HttpURLConnection prepareHttpUrlConnection(URL url) throws IOException {
@@ -149,7 +141,7 @@ public class ServerConnection extends Application {
         out.close();
     }
 
-    private void closeConnection(HttpURLConnection connection){
+    private void closeConnection(HttpURLConnection connection) {
         connection.disconnect();
     }
 }

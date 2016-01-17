@@ -4,7 +4,6 @@
 
     <!-- Server connection -->
     <integer name="server_port">3000</integer>
-    <integer name="server_connection_attempt">3</integer>
     <integer name="server_connect_timeout">10000</integer>
     <integer name="frequency_of_sending_coordinates">3600000</integer>
 

@@ -1,10 +1,10 @@
 package com.android.bigdata.stepshunter;
 
 import com.android.bigdata.databaseconnection.ParseConnection;
+import com.android.bigdata.databaseconnection.ServerConnection;
 import com.android.bigdata.helper.ShowMessage;
 import com.android.bigdata.storagedata.CoordinatesJavaBean;
 import com.android.bigdata.storagedata.InternalStorageFile;
-import com.parse.Parse;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -21,7 +21,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +33,6 @@ import android.widget.EditText;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 
 public class MainActivity extends AppCompatActivity implements IServiceCallbacks {
@@ -78,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
             }
         });
 
+        new ServerConnection(getApplicationContext()).turnOnSendingCoordinates();
     }
 
     @Override
@@ -99,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
                 Toast.makeText(getApplicationContext(), getString(R.string.GPSdisabled), Toast.LENGTH_LONG).show();
             }
         }
-
     }
 
     @Override
@@ -144,8 +142,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     public void saveCoordinates(Double latitude, Double longitude) {
         CoordinatesJavaBean c = new CoordinatesJavaBean(
                 new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").format(new Date()).toString(), latitude, longitude);
-        InternalStorageFile internalStorageFile = new InternalStorageFile(this);
-        internalStorageFile.writeJsonToGpsFile(c);
+        new InternalStorageFile(this).writeJsonToGpsFile(c);
     }
 
     @Override
