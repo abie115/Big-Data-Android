@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
 
     public void saveCoordinates(Double latitude, Double longitude) {
         CoordinatesJavaBean c = new CoordinatesJavaBean(
-                new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ").format(new Date()).toString(), latitude, longitude);
+                new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()).toString(), latitude, longitude);
         new InternalStorageFile(this).writeJsonToGpsFile(c);
     }
 

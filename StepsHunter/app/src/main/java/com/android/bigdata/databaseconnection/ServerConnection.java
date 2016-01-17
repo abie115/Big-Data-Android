@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Base64;
+import android.util.Log;
 
 import com.android.bigdata.stepshunter.R;
 import com.android.bigdata.storagedata.InternalStorageFile;
@@ -20,6 +21,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 
 import java.net.URL;
+
+import static java.util.UUID.nameUUIDFromBytes;
 
 public class ServerConnection extends Application {
 
@@ -100,14 +103,19 @@ public class ServerConnection extends Application {
     }
 
     private URL prepareServerUrl() throws MalformedURLException {
-        String server_path = context.getString(R.string.server_path) + "/:" +
-                new SettingsStorage().getSettings(context.getString(R.string.shared_preferences_user_id), context);
+        String server_path = context.getString(R.string.server_path) + "/" +
+                changeStringToUUID(new SettingsStorage().getSettings(context.getString(R.string.shared_preferences_user_id), context));
+
         return new URL(
                 context.getString(R.string.server_protocol),
                 context.getString(R.string.server_host),
                 context.getResources().getInteger(R.integer.server_port),
                 server_path
         );
+    }
+
+    private String changeStringToUUID(String id){
+        return nameUUIDFromBytes(id.getBytes()).toString();
     }
 
     private String prepareDataToSent() {
