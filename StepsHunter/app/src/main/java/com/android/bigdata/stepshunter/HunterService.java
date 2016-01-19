@@ -171,7 +171,7 @@ public class HunterService extends Service {
         try {
             SettingsStorage.saveSettings(FREQUENCY_PREFS, Long.toString(CURRENT_FREQUENCY), this);
         } catch (NumberFormatException e) {
-            ShowMessage.showOkDialog(getString(R.string.ERROR_readFrequency), this);
+            ShowMessage.showOkDialog(getString(R.string.ERROR_readFrequency), mContext);
             Log.w("HunterService | saveFr", getString(R.string.LOG_readFrequency) + e.getMessage());
         }
     }
@@ -182,8 +182,7 @@ public class HunterService extends Service {
         try {
             CURRENT_FREQUENCY = Long.parseLong(savedFrequency);
         } catch (NumberFormatException e) {
-            CURRENT_FREQUENCY = DEFAULT_FREQUENCY;
-            ShowMessage.showOkDialog(getString(R.string.ERROR_readFrequency), this);
+            setDefaultFrequency();
             Log.w("HunterService | readFr", getString(R.string.LOG_readFrequency) + e.getMessage());
         }
     }
