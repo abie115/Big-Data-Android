@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 
@@ -44,7 +45,6 @@ public class ServerConnection extends Application {
 
     public void turnOnSendingCoordinates() {
         new Thread() {
-            @Override
             public void run() {
                 IntentFilter intentFilter = new IntentFilter();
                 intentFilter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
@@ -84,7 +84,7 @@ public class ServerConnection extends Application {
         if (data == null) {
             return;
         }
-
+        disableConnectionReuseIfNecessary();
         try {
             HttpURLConnection connection = prepareHttpUrlConnection(prepareServerUrl());
             sentDataToServer(data, connection);
@@ -99,12 +99,12 @@ public class ServerConnection extends Application {
 
     private void deleteGpsFileIfResponseOk(Integer responseCode) {
         if (responseCode == HttpURLConnection.HTTP_OK)
-            new InternalStorageFile(context).deleteGpsFile();
+            new InternalStorageFile(context).deleteGpsFile(getUserId());
     }
 
     private URL prepareServerUrl() throws MalformedURLException {
         String server_path = context.getString(R.string.server_path) + "/" +
-                changeStringToUUID(new SettingsStorage().getSettings(context.getString(R.string.shared_preferences_user_id), context));
+                changeStringToUUID(getUserId());
 
         return new URL(
                 context.getString(R.string.server_protocol),
@@ -114,19 +114,18 @@ public class ServerConnection extends Application {
         );
     }
 
-    private String changeStringToUUID(String id){
+    private String changeStringToUUID(String id) {
         return nameUUIDFromBytes(id.getBytes()).toString();
     }
 
     private String prepareDataToSent() {
-        if (new InternalStorageFile(context).ifGpsFileExist())
-            return new InternalStorageFile(context).readJsonFromGpsFile().toString();
+        if (new InternalStorageFile(context).ifFileExist(getUserId()))
+            return new InternalStorageFile(context).readGPSJsonFromFile(getUserId()).toString();
         else
             return null;
     }
 
     private HttpURLConnection prepareHttpUrlConnection(URL url) throws IOException {
-
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         connection.setConnectTimeout(context.getResources().getInteger(R.integer.server_connect_timeout));
@@ -151,5 +150,15 @@ public class ServerConnection extends Application {
 
     private void closeConnection(HttpURLConnection connection) {
         connection.disconnect();
+    }
+
+    private String getUserId() {
+        return new SettingsStorage().getSettings(context.getString(R.string.shared_preferences_user_id), context);
+    }
+
+    private void disableConnectionReuseIfNecessary() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+            System.setProperty("http.keepAlive", "false");
+        }
     }
 }

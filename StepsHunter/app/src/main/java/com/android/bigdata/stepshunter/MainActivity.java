@@ -5,6 +5,7 @@ import com.android.bigdata.databaseconnection.ServerConnection;
 import com.android.bigdata.helper.ShowMessage;
 import com.android.bigdata.storagedata.CoordinatesJavaBean;
 import com.android.bigdata.storagedata.InternalStorageFile;
+import com.android.bigdata.storagedata.SettingsStorage;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     public void saveCoordinates(Double latitude, Double longitude) {
         CoordinatesJavaBean c = new CoordinatesJavaBean(
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()).toString(), latitude, longitude);
-        new InternalStorageFile(this).writeJsonToGpsFile(c);
+        new InternalStorageFile(this).writeGPSJsonToFile(c, new SettingsStorage().getSettings(getString(R.string.shared_preferences_user_id), getApplicationContext()));
     }
 
     @Override

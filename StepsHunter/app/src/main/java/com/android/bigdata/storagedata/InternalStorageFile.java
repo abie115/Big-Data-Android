@@ -40,68 +40,43 @@ public class InternalStorageFile {
         logger.severe(trace.toString());
     }
 
-    public void writeJsonToGpsFile(CoordinatesJavaBean coordinatesJavaBean) {
+    public void writeGPSJsonToFile(CoordinatesJavaBean coordinatesJavaBean, String fileName) {
         Gson gson = new Gson();
-        String text = gson.toJson(coordinatesJavaBean);
 
-        if (!writeToFile(context.getString(R.string.file_with_gps), text))
+        if (!writeToFile(fileName, gson.toJson(coordinatesJavaBean)))
             showToast(context.getString(R.string.toast_internal_storage_error));
-
     }
 
-    public JSONObject readJsonFromGpsFile() {
+    public JSONObject readGPSJsonFromFile(String fileName) {
         String oneLine;
         JSONArray jsonArray = new JSONArray();
 
         try {
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(context.openFileInput(context.getString(R.string.file_with_gps))));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(context.openFileInput(fileName)));
 
             while ((oneLine = bufferedReader.readLine()) != null) {
-                jsonArray.put(newJsonObject(oneLine));
+                jsonArray.put(new JSONObject(oneLine));
             }
 
             bufferedReader.close();
+            return new JSONObject().put(context.getString(R.string.json_coordinates_title), jsonArray);
 
         } catch (FileNotFoundException e) {
             logException(e);
+            return null;
+        } catch (JSONException e) {
+            e.printStackTrace();
             return null;
         } catch (IOException e) {
             logException(e);
             return null;
         }
-
-        return newJsonObject(context.getString(R.string.json_coordinates_title), jsonArray);
     }
 
-
-    public JSONObject newJsonObject(String oneLine) {
-
+    public void deleteGpsFile(String fileName) {
         try {
-            return new JSONObject(oneLine);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public JSONObject newJsonObject(String name, JSONArray jsonArray) {
-
-        try {
-            return new JSONObject().put(name, jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-
-    public void deleteGpsFile() {
-        try {
-            if (ifGpsFileExist())
-                deleteFile(context.getString(R.string.file_with_gps));
+            if (ifFileExist(fileName))
+                deleteFile(fileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             showToast(context.getString(R.string.toast_internal_storage_error));
@@ -160,10 +135,6 @@ public class InternalStorageFile {
 
     public boolean ifFileExist(String filename) {
         return context.getFileStreamPath(filename).exists();
-    }
-
-    public boolean ifGpsFileExist() {
-        return ifFileExist(context.getString(R.string.file_with_gps));
     }
 
 }

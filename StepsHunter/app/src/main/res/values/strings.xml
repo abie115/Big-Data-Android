@@ -26,7 +26,6 @@
     <string name="frequency_change_restore">Przywrócono </string>
     <string name="OK">OK</string>
 
-    <string name="file_with_gps">huntedGPS</string>
     <string name="notification_title_lost_gps_signal">StepsHunter</string>
     <string name="notification_text_lost_gps_signal">Sygnał GPS został utracony</string>
 
