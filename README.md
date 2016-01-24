@@ -7,6 +7,7 @@ ___
 - Aldona Biewska
 - Agnieszka Garsta
 - Natalia Kospat Pawłowska
+- Damian Słomiński
 
 ### Opis aplikacji
 > StepsHunter jest aplikacją na platformę Android.
@@ -22,9 +23,11 @@ ___
 * odczytuje wspolrzędne gps w odstepach czasu domyślnych lub ustalonych przez użytkownika 
 * nie obsługuje zmian położenia poniżej ustalonej wielkości
 * pomaga właczyć systemowy gps (wyświetla komunikat / przekierowuje do odpowiedniego panelu)
-* komunikuje sie za pomocą notyfikacji i wiadomości toast
+* komunikuje się za pomocą notyfikacji i wiadomości toast
 * pracuje z plikami zapisanymi w pamici wewntrznej (zapis / odczyt / usunięcie / utworzenie)
-* polaczenie z baza parse.com
-* rejestracja uzytkownikow
+* połączenie z bazą parse.com
+* rejestracja użytkowników
+* logowanie użytkowników
 * posiada ekran powitalny
 * wykorzystuje niestandardowy preloader
+* wymienia dane z serwerem
