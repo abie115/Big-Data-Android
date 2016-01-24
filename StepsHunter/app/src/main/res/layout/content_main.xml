@@ -7,8 +7,110 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_main" tools:context=".MainActivity">
+    tools:showIn="@layout/activity_main" tools:context=".MainActivity"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
 
-    <TextView android:text="Hello World!" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- layout dla wprowadzania czestotliwosci -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:text="@string/frequency_setting" android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <EditText android:id="@+id/frequency_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:inputType="number" />
+
+                    <Button android:id="@+id/frequency_button_set" android:text="@string/frequency_batton_set"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="changeFrequency" />
+
+                </LinearLayout>
+
+                <Button android:id="@+id/frequency_button_default" android:text="@string/frequency_batton_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="setDefaultFrequency" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvLatitude"
+                    android:id="@+id/tvLatitude"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="38dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tvLongitude"
+                    android:id="@+id/tvLongitude"
+                    android:layout_below="@+id/tvLatitude"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <ScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/scrollView"
+                    android:layout_marginTop="23dp"
+                    android:layout_below="@+id/tvLongitude"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tvLog"
+                        android:id="@+id/tvLog"
+                        android:layout_alignRight="@+id/tvLongitude"
+                        android:layout_alignEnd="@+id/tvLongitude"
+                        android:layout_marginRight="51dp"
+                        android:layout_marginEnd="51dp" />
+                </ScrollView>
+
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/swLocation"
+                    android:id="@+id/swGPS"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 </RelativeLayout>
