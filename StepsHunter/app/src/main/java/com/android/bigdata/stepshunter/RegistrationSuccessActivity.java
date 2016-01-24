@@ -18,13 +18,8 @@ public class RegistrationSuccessActivity extends AppCompatActivity {
     }
 
     public void goToApplication(View view){
-        ParseUser user = ParseUser.getCurrentUser();
-        if(user == null)
-            ShowMessage.showOkDialog("Nie można wykonać operacji - nie jesteś zalogowany/a.",this);
-        else {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

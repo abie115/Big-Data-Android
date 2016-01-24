@@ -85,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements IServiceCallbacks
     protected void onStart() {
         super.onStart();
 
-        Log.d("MainAct", "Błąd on start.");
-
         if (hService == null)
             bindHunterService();
 
